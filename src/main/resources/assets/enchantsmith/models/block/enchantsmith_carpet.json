@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/carpet",
+  "textures": {
+    "wool": "enchantsmith:block/enchantsmith_carpet"
+  }
+}
