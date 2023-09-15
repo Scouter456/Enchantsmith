@@ -172,7 +172,7 @@ public class EnchantSmithScreen extends AbstractContainerScreen<EnchantSmithMenu
     }
 
     private void renderStack(ItemStack stack, int costs, Container container, int pLeft, int pTop, int offSetLeft, int offSetTop) {
-        if (costs > 0 && container.isEmpty()) {
+        if (costs > 0 && container.isEmpty() && !this.menu.getResultSlot().getItem().isEmpty()) {
             int slotTopLeft = pLeft + offSetLeft;
             int slotTopTop = pTop + offSetTop;
             ItemStack itemStack = stack;
@@ -184,7 +184,7 @@ public class EnchantSmithScreen extends AbstractContainerScreen<EnchantSmithMenu
     }
 
     private void renderSlotOverlay(PoseStack poseStack,int costs, Container container , int pLeft, int pTop, int offSetLeft, int offSetTop) {
-        if (costs > 0 && container.isEmpty()) {
+        if (costs > 0 && container.isEmpty() && !this.menu.getResultSlot().getItem().isEmpty()) {
             int slotTopLeft = pLeft + offSetLeft;
             int slotTopTop = pTop + offSetTop;
             poseStack.pushPose();

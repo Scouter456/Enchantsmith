@@ -2,23 +2,25 @@ package com.scouter.enchantsmith.menu;
 
 import com.scouter.enchantsmith.utils.EnchantmentUtils;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.util.RandomSource;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
+Some import net.minecraft.util.RandomSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.npc.ClientSideMerchant;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.EnchantedBookItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.item.trading.Merchant;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.Tags;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -104,18 +106,41 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
     }
     public EnchantSmithMenu(MenuType<?> menuType, int id, Inventory inventory, ContainerLevelAccess access, Merchant trader) {
         super(menuType, id);
+        checkContainerSize(inventory, 4);
         this.access = access;
         this.level = inventory.player.level;
+
+
+
+        addPlayerInventory(inventory);
+        addPlayerHotbar(inventory);
+
+
         this.addDataSlot(this.cost);
         this.addDataSlot(this.extraEnchantmentLevelCost);
         this.addDataSlot(this.extraExperienceLevelCost);
         this.addDataSlot(this.enchantmentId);
         this.addDataSlot(this.enchantLevel);
         this.trader = trader;
-        this.inputSlot = this.addSlot(new Slot(this.container, 0, 20, 33));
-        this.goldInputSlot = this.addSlot(new Slot(this.goldContainer, 1, 135, 51));
-        this.emeraldInputSlot = this.addSlot(new Slot(this.emeraldContainer, 2, 154, 51));
-        this.resultSlot = this.addSlot(new Slot(this.resultContainer, 3, 143, 21) {
+        this.inputSlot = this.addSlot(new Slot(this.container, 0, 20, 33){
+            @Override
+            public boolean mayPlace(ItemStack pStack) {
+                return (!pStack.is(Tags.Items.INGOTS) || !pStack.is(Tags.Items.GEMS)) && pStack.isEnchanted();
+            }
+        });
+        this.goldInputSlot = this.addSlot(new Slot(this.goldContainer, 0, 135, 51){
+            @Override
+            public boolean mayPlace(ItemStack pStack) {
+                return pStack.is(Items.GOLD_INGOT);
+            }
+        });
+        this.emeraldInputSlot = this.addSlot(new Slot(this.emeraldContainer, 0, 154, 51){
+            @Override
+            public boolean mayPlace(ItemStack pStack) {
+                return pStack.is(Items.EMERALD);
+            }
+        });
+        this.resultSlot = this.addSlot(new Slot(this.resultContainer, 1, 143, 21) {
             /**
              * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
              */
@@ -131,13 +156,12 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
             public void onTake(Player p_150672_, ItemStack p_150673_) {
                 p_150673_.onCraftedBy(p_150672_.level, p_150672_, p_150673_.getCount());
                // EnchantSmithMenu.this.resultContainer.awardUsedRecipes(p_150672_);
-
+                ItemStack itemstack = EnchantSmithMenu.this.inputSlot.remove(1);
                 if (!p_150672_.getAbilities().instabuild) {
                     p_150672_.giveExperienceLevels(-EnchantSmithMenu.this.extraExperienceLevelCost.get());
+                    ItemStack itemstack2 = EnchantSmithMenu.this.goldInputSlot.remove(EnchantSmithMenu.this.cost.get());
+                    ItemStack itemstack3 = EnchantSmithMenu.this.emeraldInputSlot.remove(EnchantSmithMenu.this.extraEnchantmentLevelCost.get());
                 }
-                ItemStack itemstack = EnchantSmithMenu.this.inputSlot.remove(1);
-                ItemStack itemstack2 = EnchantSmithMenu.this.goldInputSlot.remove(EnchantSmithMenu.this.cost.get());
-                ItemStack itemstack3 = EnchantSmithMenu.this.emeraldInputSlot.remove(EnchantSmithMenu.this.extraEnchantmentLevelCost.get());
                 EnchantSmithMenu.this.resetEmeraldValues();
                 EnchantSmithMenu.this.enchantmentId.set(0);
                 EnchantSmithMenu.this.cost.set(0);
@@ -146,32 +170,33 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
                     EnchantSmithMenu.this.setupResultSlot(0);
                 }
 
-                //pAccess.execute((p_40364_, p_40365_) -> {
-                //    long l = p_40364_.getGameTime();
-                //    if (StonecutterMenu.this.lastSoundTime != l) {
-                //        p_40364_.playSound((Player)null, p_40365_, SoundEvents.UI_STONECUTTER_TAKE_RESULT, SoundSource.BLOCKS, 1.0F, 1.0F);
-                //        StonecutterMenu.this.lastSoundTime = l;
-                //    }
-//
-                //});
+
+                EnchantSmithMenu.this.playTradeSound();
                 super.onTake(p_150672_, p_150673_);
             }
         });
 
-        for(int i = 0; i < 3; ++i) {
-            for(int j = 0; j < 9; ++j) {
-                this.addSlot(new Slot(inventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
-            }
-        }
 
-        for(int k = 0; k < 9; ++k) {
-            this.addSlot(new Slot(inventory, k, 8 + k * 18, 142));
+    }
+
+    private void addPlayerInventory(Inventory playerInventory) {
+        for (int i = 0; i < 3; ++i) {
+            for (int l = 0; l < 9; ++l) {
+                this.addSlot(new Slot(playerInventory, l + i * 9 + 9, 8 + l * 18, 84 + i * 18));
+            }
         }
     }
 
+    private void addPlayerHotbar(Inventory playerInventory) {
+        for (int i = 0; i < 9; ++i) {
+            this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
+        }
+    }
+
+
     //TODO add emerald costs and experience costs
     public boolean mayPickUp(Player player, boolean hasItem){
-        return hasEmerald(player) && hasGold(player) && hasExperience(player);
+        return  player.getAbilities().instabuild || hasEmerald(player) && hasGold(player) && hasExperience(player);
     }
 
     private  boolean hasGold(Player player){
@@ -472,57 +497,65 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
         }
     }
     //Todo make this correct
-    public ItemStack quickMoveStack(Player pPlayer, int pIndex) {
-        ItemStack itemstack = ItemStack.EMPTY;
-        Slot slot = this.slots.get(pIndex);
-        if (slot != null && slot.hasItem()) {
-            ItemStack itemstack1 = slot.getItem();
-            Item item = itemstack1.getItem();
-            itemstack = itemstack1.copy();
-            if (pIndex == 1) {
-                item.onCraftedBy(itemstack1, pPlayer.level, pPlayer);
-                if (!this.moveItemStackTo(itemstack1, 2, 38, true)) {
-                    return ItemStack.EMPTY;
-                }
+    private static final int HOTBAR_SLOT_COUNT = 9;
+    private static final int PLAYER_INVENTORY_ROW_COUNT = 3;
+    private static final int PLAYER_INVENTORY_COLUMN_COUNT = 9;
+    private static final int PLAYER_INVENTORY_SLOT_COUNT = PLAYER_INVENTORY_COLUMN_COUNT * PLAYER_INVENTORY_ROW_COUNT;
+    private static final int VANILLA_SLOT_COUNT = HOTBAR_SLOT_COUNT + PLAYER_INVENTORY_SLOT_COUNT;
+    private static final int VANILLA_FIRST_SLOT_INDEX = 0;
+    private static final int TE_INVENTORY_FIRST_SLOT_INDEX = VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT;
 
-                slot.onQuickCraft(itemstack1, itemstack);
-            } else if (pIndex == 0) {
-                if (!this.moveItemStackTo(itemstack1, 2, 38, false)) {
-                    return ItemStack.EMPTY;
-                }
-            } else if (this.level.getRecipeManager().getRecipeFor(RecipeType.STONECUTTING, new SimpleContainer(itemstack1), this.level).isPresent()) {
-                if (!this.moveItemStackTo(itemstack1, 0, 1, false)) {
-                    return ItemStack.EMPTY;
-                }
-            } else if (pIndex >= 2 && pIndex < 29) {
-                if (!this.moveItemStackTo(itemstack1, 29, 38, false)) {
-                    return ItemStack.EMPTY;
-                }
-            } else if (pIndex >= 29 && pIndex < 38 && !this.moveItemStackTo(itemstack1, 2, 29, false)) {
+    // THIS YOU HAVE TO DEFINE!
+    private static final int TE_INVENTORY_SLOT_COUNT = 4;  // must be the number of slots you have!
+
+    @Override
+    public ItemStack quickMoveStack(Player playerIn, int index) {
+        Slot sourceSlot = slots.get(index);
+        if (sourceSlot == null || !sourceSlot.hasItem()) return ItemStack.EMPTY;  //EMPTY_ITEM
+        ItemStack sourceStack = sourceSlot.getItem();
+        ItemStack copyOfSourceStack = sourceStack.copy();
+
+
+        // Check if the slot clicked is one of the vanilla container slots
+        if (index < VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT) {
+            // This is a vanilla container slot so merge the stack into the tile inventory
+            if (!moveItemStackTo(sourceStack, TE_INVENTORY_FIRST_SLOT_INDEX, TE_INVENTORY_FIRST_SLOT_INDEX
+                    + TE_INVENTORY_SLOT_COUNT, false)) {
+                return ItemStack.EMPTY;  // EMPTY_ITEM
+            }
+        } else if (index < TE_INVENTORY_FIRST_SLOT_INDEX + TE_INVENTORY_SLOT_COUNT) {
+            // This is a TE slot so merge the stack into the players inventory
+
+            if(index == 39){
+                playTradeSound();
+            }
+
+            if (!moveItemStackTo(sourceStack, VANILLA_FIRST_SLOT_INDEX, VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT, false)) {
                 return ItemStack.EMPTY;
             }
-
-            if (itemstack1.isEmpty()) {
-                slot.set(ItemStack.EMPTY);
-            }
-
-            slot.setChanged();
-            if (itemstack1.getCount() == itemstack.getCount()) {
-                return ItemStack.EMPTY;
-            }
-
-            slot.onTake(pPlayer, itemstack1);
-            this.broadcastChanges();
+        } else {
+            return ItemStack.EMPTY;
         }
-
-        return itemstack;
+        // If stack size == 0 (the entire stack was moved) set slot contents to null
+        if (sourceStack.getCount() == 0) {
+            sourceSlot.set(ItemStack.EMPTY);
+        } else {
+            sourceSlot.setChanged();
+        }
+        sourceSlot.onTake(playerIn, sourceStack);
+        return copyOfSourceStack;
     }
 
     @Override
     public boolean stillValid(Player pPlayer) {
         return true;
     }
-
+    private void playTradeSound() {
+        if (!this.trader.isClientSide()) {
+            Entity entity = (Entity)this.trader;
+            entity.getLevel().playLocalSound(entity.getX(), entity.getY(), entity.getZ(), this.trader.getNotifyTradeSound(), SoundSource.NEUTRAL, 1.0F, 1.0F, false);
+        }
+    }
     /**
      * Called when the container is closed.
      */
@@ -530,14 +563,45 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
         super.removed(pPlayer);
         this.trader.setTradingPlayer((Player)null);
         this.resultContainer.removeItemNoUpdate(1);
-        this.access.execute((p_40313_, p_40314_) -> {
-            this.clearContainer(pPlayer, this.container);
-        });
-        this.access.execute((p_40313_, p_40314_) -> {
-            this.clearContainer(pPlayer, this.goldContainer);
-        });
-        this.access.execute((p_40313_, p_40314_) -> {
-            this.clearContainer(pPlayer, this.emeraldContainer);
-        });
+        if (!this.trader.isClientSide()) {
+            if (!pPlayer.isAlive() || pPlayer instanceof ServerPlayer && ((ServerPlayer)pPlayer).hasDisconnected()) {
+                ItemStack itemstack = this.container.removeItemNoUpdate(0);
+                if (!itemstack.isEmpty()) {
+                    pPlayer.drop(itemstack, false);
+                }
+
+                itemstack = this.container.removeItemNoUpdate(0);
+                if (!itemstack.isEmpty()) {
+                    pPlayer.drop(itemstack, false);
+                }
+
+                ItemStack itemstack2 = this.emeraldContainer.removeItemNoUpdate(0);
+                if (!itemstack2.isEmpty()) {
+                    pPlayer.drop(itemstack2, false);
+                }
+
+                itemstack2 = this.emeraldContainer.removeItemNoUpdate(0);
+                if (!itemstack2.isEmpty()) {
+                    pPlayer.drop(itemstack2, false);
+                }
+
+                ItemStack itemstack3 = this.goldContainer.removeItemNoUpdate(0);
+                if (!itemstack3.isEmpty()) {
+                    pPlayer.drop(itemstack3, false);
+                }
+
+                itemstack3 = this.goldContainer.removeItemNoUpdate(0);
+                if (!itemstack3.isEmpty()) {
+                    pPlayer.drop(itemstack3, false);
+                }
+
+
+            } else if (pPlayer instanceof ServerPlayer) {
+                pPlayer.getInventory().placeItemBackInInventory(this.container.removeItemNoUpdate(0));
+                pPlayer.getInventory().placeItemBackInInventory(this.emeraldContainer.removeItemNoUpdate(0));
+                pPlayer.getInventory().placeItemBackInInventory(this.goldContainer.removeItemNoUpdate(0));
+            }
+
+        }
     }
 }
