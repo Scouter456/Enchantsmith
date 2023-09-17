@@ -9,4 +9,8 @@ public class BiomeTagsProvider extends net.minecraft.data.tags.BiomeTagsProvider
         super(pGenerator, EnchantSmith.MODID, existingFileHelper);
     }
 
+    @Override
+    protected void addTags() {
+
+    }
 }

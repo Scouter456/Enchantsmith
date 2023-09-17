@@ -6,6 +6,7 @@ import com.scouter.enchantsmith.blocks.ESBlocks;
 import com.scouter.enchantsmith.entity.villagerprofessions.VillagerProfessions;
 import com.scouter.enchantsmith.items.ESItems;
 import com.scouter.enchantsmith.menu.ESMenus;
+import com.scouter.enchantsmith.structures.ESStructures;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -22,10 +23,7 @@ public class Registration {
         ESItems.ITEMS.register(bus);
         VillagerProfessions.register(bus);
         ESBanners.BANNER.register(bus);
-        //EQStructures.STRUCTURE_PIECE.register(bus);
-        //EQStructures.STRUCTURE_TYPE.register(bus);
-
-
+        ESStructures.STRUCTURES.register(bus);
     }
 
     public static final Item.Properties defaultBuilder() {
