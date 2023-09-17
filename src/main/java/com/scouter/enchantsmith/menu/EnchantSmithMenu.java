@@ -1,8 +1,11 @@
 package com.scouter.enchantsmith.menu;
 
+import com.scouter.enchantsmith.advancements.ESAdvancementTriggers;
+import com.scouter.enchantsmith.stat.ESStats;
 import com.scouter.enchantsmith.utils.EnchantmentUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Container;
@@ -165,7 +168,11 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
                 if (!itemstack.isEmpty()) {
                     EnchantSmithMenu.this.setupResultSlot(0);
                 }
+                p_150672_.awardStat(ESStats.ENCHANTSMITH_USE_STAT.get());
 
+                if(p_150672_ instanceof ServerPlayer serverPlayer) {
+                    ESAdvancementTriggers.ENCHANTSMITH_USE.trigger(serverPlayer);
+                }
 
                 EnchantSmithMenu.this.playTradeSound();
                 super.onTake(p_150672_, p_150673_);
@@ -189,8 +196,6 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
         }
     }
 
-
-    //TODO add emerald costs and experience costs
     public boolean mayPickUp(Player player, boolean hasItem){
         return  player.getAbilities().instabuild || hasEmerald(player) && hasGold(player) && hasExperience(player);
     }
@@ -553,6 +558,7 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
         if (!this.trader.isClientSide()) {
             Entity entity = (Entity)this.trader;
             entity.getLevel().playSound(null,entity.getX(), entity.getY(), entity.getZ(), this.trader.getNotifyTradeSound(), SoundSource.NEUTRAL, 1.0F, 1.0F);
+            entity.getLevel().playSound(null,entity.getX(), entity.getY(), entity.getZ(), SoundEvents.NOTE_BLOCK_CHIME, SoundSource.NEUTRAL, 1.0F, 1.0F);
         }
     }
     /**
@@ -560,6 +566,7 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
      */
     public void removed(Player pPlayer) {
         super.removed(pPlayer);
+        playCloseSound();
         this.trader.setTradingPlayer((Player)null);
         this.removeItemsFromContainer(this.resultContainer, pPlayer, 1);
         if (!this.trader.isClientSide()) {
@@ -575,6 +582,14 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
 
         }
     }
+
+    private void playCloseSound() {
+        if (!this.trader.isClientSide()) {
+            Entity entity = (Entity)this.trader;
+            entity.getLevel().playSound(null,entity.getX(), entity.getY(), entity.getZ(), SoundEvents.BOOK_PAGE_TURN, SoundSource.NEUTRAL, 1.0F, 1.0F);
+        }
+    }
+
 
     private void removeItemsFromContainer(Container container, Player player, int slot) {
         ItemStack itemStack = container.removeItemNoUpdate(slot);

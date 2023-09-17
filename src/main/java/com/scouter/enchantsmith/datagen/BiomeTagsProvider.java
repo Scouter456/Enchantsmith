@@ -3,7 +3,6 @@ package com.scouter.enchantsmith.datagen;
 import com.scouter.enchantsmith.EnchantSmith;
 import com.scouter.enchantsmith.utils.ESTags;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraftforge.common.data.ExistingFileHelper;
 

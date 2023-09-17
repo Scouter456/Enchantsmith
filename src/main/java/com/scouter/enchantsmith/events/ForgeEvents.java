@@ -2,19 +2,27 @@ package com.scouter.enchantsmith.events;
 
 import com.scouter.enchantsmith.EnchantSmith;
 import com.scouter.enchantsmith.entity.villagerprofessions.VillagerProfessions;
+import com.scouter.enchantsmith.items.ESItems;
 import com.scouter.enchantsmith.menu.EnchantSmithMenu;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.village.WandererTradesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.List;
 import java.util.OptionalInt;
 
 @Mod.EventBusSubscriber(modid = EnchantSmith.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
@@ -36,6 +44,7 @@ public class ForgeEvents {
                         OptionalInt optionalint = player.openMenu(new SimpleMenuProvider((p_45298_, p_45299_, p_45300_) -> {
                             return new EnchantSmithMenu(p_45298_, p_45299_, ContainerLevelAccess.create(player.level, player.blockPosition()), villager);
                         }, villager.getDisplayName()));
+                        playOpenScreenSound(villager);
                         player.awardStat(Stats.TALKED_TO_VILLAGER);
                     }
 
@@ -44,5 +53,30 @@ public class ForgeEvents {
 
         }
     }
+    @SubscribeEvent
+    public static void addWanderingTraderTrades(WandererTradesEvent event){
+        List<VillagerTrades.ItemListing> rareTrades = event.getRareTrades();
+        rareTrades.add((pTrader, pRandom) -> new MerchantOffer(
+                new ItemStack(Items.EMERALD, 12),
+                new ItemStack(ESItems.ENCHANTSMITH_BANNER_PATTERN.get(), 1),
+                2, 12, 0.15f));
+        rareTrades.add((pTrader, pRandom) -> new MerchantOffer(
+                new ItemStack(Items.EMERALD, 4),
+                new ItemStack(ESItems.ENCHANTSMITH_SPIRAL_BANNER_PATTERN.get(), 1),
+                2, 12, 0.15f));
+        rareTrades.add((pTrader, pRandom) -> new MerchantOffer(
+                new ItemStack(Items.EMERALD, 4),
+                new ItemStack(ESItems.ENCHANTSMITH_NOISE_BANNER_PATTERN.get(), 1),
+                2, 12, 0.15f));
+        rareTrades.add((pTrader, pRandom) -> new MerchantOffer(
+                new ItemStack(Items.EMERALD, 4),
+                new ItemStack(ESItems.ENCHANTSMITH_BORDER_BANNER_PATTERN.get(), 1),
+                2, 12, 0.15f));
+    }
 
+    private static void playOpenScreenSound(Entity entity) {
+        if (!entity.level.isClientSide()) {
+            entity.getLevel().playSound(null,entity.getX(), entity.getY(), entity.getZ(), SoundEvents.BOOK_PAGE_TURN, SoundSource.NEUTRAL, 1.0F, 1.0F);
+        }
+    }
 }

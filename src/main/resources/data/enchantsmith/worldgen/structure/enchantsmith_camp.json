@@ -5,7 +5,7 @@
   "min_y_allowed": 55, //set the minumum y value the structure can spawn?
   "cannot_spawn_in_liquid": true,
   "terrain_height_radius_check": 3, //check in a radius of 3 in a radius around a certain block?
-  "allowed_terrain_height_range": 15, //check in y range how steep it is and how much air?
+  "allowed_terrain_height_range": 16, //check in y range how steep it is and how much air?
   "max_distance_from_center": 80,
   "biomes": "#enchantsmith:enchantsmith_camp_biomes",
   "step": "surface_structures",

@@ -22,6 +22,10 @@ public class LanguageGenerator extends LanguageProvider {
 
 
         addItem(() -> ESBlocks.ENCHANTSMITH_CARPET.get().asItem(), "Enchantsmith Carpet");
+        add(ESItems.ENCHANTSMITH_BANNER_PATTERN.get(), "Banner Pattern");
+        add(ESItems.ENCHANTSMITH_BORDER_BANNER_PATTERN.get(), "Banner Pattern");
+        add(ESItems.ENCHANTSMITH_NOISE_BANNER_PATTERN.get(), "Banner Pattern");
+        add(ESItems.ENCHANTSMITH_SPIRAL_BANNER_PATTERN.get(), "Banner Pattern");
 
         add("enchantsmith.emerald_levels", "Pay Emeralds for extra Levels!");
         add("entity.minecraft.villager.enchantsmith.enchantsmith", "Enchantsmith");
@@ -98,10 +102,11 @@ public class LanguageGenerator extends LanguageProvider {
         add("item.enchantsmith.banner.enchantsmith_noise_pattern", "Banner Pattern");
         add("item.enchantsmith.banner.enchantsmith_spiral_pattern", "Banner Pattern");
         add("item.enchantsmith.banner.enchantsmith_border_pattern", "Banner Pattern");
-        add("item.enchantsmith.banner.enchantsmith_banner_pattern.desc", "Enchantsmith Banner");
-        add("item.enchantsmith.banner.enchantsmith_noise_pattern.desc", "Enchantsmith Banner Noise");
-        add("item.enchantsmith.banner.enchantsmith_spiral_pattern.desc", "Enchantsmith Banner Spiral");
-        add("item.enchantsmith.banner.enchantsmith_border_pattern.desc", "Enchantsmith Banner Border");
+        add("item.enchantsmith.enchantsmith_banner_pattern.desc", "Enchantsmith Banner");
+        add("item.enchantsmith.enchantsmith_noise_banner_pattern.desc", "Enchantsmith Banner Noise");
+        add("item.enchantsmith.enchantsmith_spiral_banner_pattern.desc", "Enchantsmith Banner Spiral");
+        add("item.enchantsmith.enchantsmith_border_banner_pattern.desc", "Enchantsmith Banner Border");
+        add("stat.enchantsmith.enchantsmith_use", "Used Enchantsmith");
 
         addTabName(ESItems.creativeTab, "Enchantsmith");
 

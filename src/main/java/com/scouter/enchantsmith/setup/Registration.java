@@ -1,12 +1,13 @@
 package com.scouter.enchantsmith.setup;
 
 import com.mojang.logging.LogUtils;
+import com.scouter.enchantsmith.advancements.ESAdvancementTriggers;
 import com.scouter.enchantsmith.banners.ESBanners;
 import com.scouter.enchantsmith.blocks.ESBlocks;
 import com.scouter.enchantsmith.entity.villagerprofessions.VillagerProfessions;
 import com.scouter.enchantsmith.items.ESItems;
 import com.scouter.enchantsmith.menu.ESMenus;
-import com.scouter.enchantsmith.sounds.ESSounds;
+import com.scouter.enchantsmith.stat.ESStats;
 import com.scouter.enchantsmith.structures.ESStructures;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -25,7 +26,8 @@ public class Registration {
         VillagerProfessions.register(bus);
         ESBanners.BANNER.register(bus);
         ESStructures.STRUCTURES.register(bus);
-        ESSounds.SOUNDS.register(bus);
+        ESStats.STAT.register(bus);
+        ESAdvancementTriggers.init();
     }
 
     public static final Item.Properties defaultBuilder() {

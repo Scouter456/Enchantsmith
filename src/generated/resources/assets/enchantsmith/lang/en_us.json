@@ -67,12 +67,17 @@
   "enchantsmith.emerald_levels": "Pay Emeralds for extra Levels!",
   "entity.minecraft.villager.enchantsmith.enchantsmith": "Enchantsmith",
   "item.enchantsmith.banner.enchantsmith_banner_pattern": "Banner Pattern",
-  "item.enchantsmith.banner.enchantsmith_banner_pattern.desc": "Enchantsmith Banner",
   "item.enchantsmith.banner.enchantsmith_border_pattern": "Banner Pattern",
-  "item.enchantsmith.banner.enchantsmith_border_pattern.desc": "Enchantsmith Banner Border",
   "item.enchantsmith.banner.enchantsmith_noise_pattern": "Banner Pattern",
-  "item.enchantsmith.banner.enchantsmith_noise_pattern.desc": "Enchantsmith Banner Noise",
   "item.enchantsmith.banner.enchantsmith_spiral_pattern": "Banner Pattern",
-  "item.enchantsmith.banner.enchantsmith_spiral_pattern.desc": "Enchantsmith Banner Spiral",
-  "itemGroup.enderquatic": "Enchantsmith"
+  "item.enchantsmith.enchantsmith_banner_pattern": "Banner Pattern",
+  "item.enchantsmith.enchantsmith_banner_pattern.desc": "Enchantsmith Banner",
+  "item.enchantsmith.enchantsmith_border_banner_pattern": "Banner Pattern",
+  "item.enchantsmith.enchantsmith_border_banner_pattern.desc": "Enchantsmith Banner Border",
+  "item.enchantsmith.enchantsmith_noise_banner_pattern": "Banner Pattern",
+  "item.enchantsmith.enchantsmith_noise_banner_pattern.desc": "Enchantsmith Banner Noise",
+  "item.enchantsmith.enchantsmith_spiral_banner_pattern": "Banner Pattern",
+  "item.enchantsmith.enchantsmith_spiral_banner_pattern.desc": "Enchantsmith Banner Spiral",
+  "itemGroup.enderquatic": "Enchantsmith",
+  "stat.enchantsmith.enchantsmith_use": "Used Enchantsmith"
 }
