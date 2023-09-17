@@ -93,7 +93,7 @@ public class EnchantSmithCamp extends Structure {
 
         // Turns the chunk coordinates into actual coordinates we can use. (Gets center of that chunk)
         BlockPos blockpos = context.chunkPos().getMiddleBlockPosition(0);
-        blockpos = blockpos.offset(0,0,0);
+        blockpos = blockpos.offset(0,startY,0);
 
         BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos(blockpos.getX(), blockpos.getY(), blockpos.getZ());
         ChunkGenerator chunkGenerator = context.chunkGenerator();

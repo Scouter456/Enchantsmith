@@ -27,16 +27,10 @@ import java.util.Map;
 import java.util.Objects;
 
 public class EnchantSmithMenu extends AbstractContainerMenu {
-    protected final ResultContainer resultSlots = new ResultContainer();
     private final DataSlot cost = DataSlot.standalone();
     private final DataSlot extraEnchantmentLevelCost = DataSlot.standalone();
     private final DataSlot extraExperienceLevelCost = DataSlot.standalone();
-    private Map<Integer, Integer> emeraldCosts = new HashMap<>(){{
-        put(3,2);
-        put(7,3);
-        put(15,4);
-        put(31,5);
-    }};
+
     private final Level level;
     private final DataSlot enchantmentId = DataSlot.standalone();
     private final ContainerLevelAccess access;
@@ -97,6 +91,8 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
 
     /** The inventory that stores the output of the crafting recipe. */
     final ResultContainer resultContainer = new ResultContainer();
+
+
     public EnchantSmithMenu(int id, Inventory inventory, FriendlyByteBuf friendlyByteBuf) {
         this(ESMenus.ENCHANTSMITH_MENU.get(), id, inventory, ContainerLevelAccess.NULL, new ClientSideMerchant(inventory.player));
     }
@@ -400,10 +396,6 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
 
     private void setupGoldCost(Container pContainer, ItemStack pStack) {
         if (!pStack.isEmpty()) {
-
-
-
-
         }
     }
 
@@ -483,7 +475,6 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
             this.selectedEnchantmentIndex.set(pId);
             resetValues();
         }
-
         return true;
     }
 
@@ -496,7 +487,7 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
             this.setupResultSlot(0);
         }
     }
-    //Todo make this correct
+
     private static final int HOTBAR_SLOT_COUNT = 9;
     private static final int PLAYER_INVENTORY_ROW_COUNT = 3;
     private static final int PLAYER_INVENTORY_COLUMN_COUNT = 9;
@@ -546,14 +537,16 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
         return copyOfSourceStack;
     }
 
-    @Override
     public boolean stillValid(Player pPlayer) {
-        return true;
+        return this.access.evaluate((p_39785_, p_39786_) -> {
+            return pPlayer.distanceToSqr((double) p_39786_.getX() + 0.5D, (double) p_39786_.getY() + 0.5D, (double) p_39786_.getZ() + 0.5D) <= 64.0D;
+        }, true);
     }
+
     private void playTradeSound() {
         if (!this.trader.isClientSide()) {
             Entity entity = (Entity)this.trader;
-            entity.getLevel().playLocalSound(entity.getX(), entity.getY(), entity.getZ(), this.trader.getNotifyTradeSound(), SoundSource.NEUTRAL, 1.0F, 1.0F, false);
+            entity.getLevel().playSound(null,entity.getX(), entity.getY(), entity.getZ(), this.trader.getNotifyTradeSound(), SoundSource.NEUTRAL, 1.0F, 1.0F);
         }
     }
     /**
