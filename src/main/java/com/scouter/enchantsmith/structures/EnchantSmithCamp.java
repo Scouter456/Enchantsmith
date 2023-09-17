@@ -93,7 +93,7 @@ public class EnchantSmithCamp extends Structure {
 
         // Turns the chunk coordinates into actual coordinates we can use. (Gets center of that chunk)
         BlockPos blockpos = context.chunkPos().getMiddleBlockPosition(0);
-        blockpos = blockpos.offset(0,startY,0);
+        blockpos = blockpos.offset(0,0,0);
 
         BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos(blockpos.getX(), blockpos.getY(), blockpos.getZ());
         ChunkGenerator chunkGenerator = context.chunkGenerator();
@@ -112,18 +112,17 @@ public class EnchantSmithCamp extends Structure {
         //}
         //mutable = mutable.move(40,0,0);
 
-        for(int i = 0; i < 40; i++){
-            for(int j = 0; j < 40; j++){
-                NoiseColumn columnOfBlocks = chunkGenerator.getBaseColumn(mutable.getX(), mutable.getZ(), context.heightAccessor(), context.randomState());
-                if(columnOfBlocks.getBlock(mutable.below().getY()).is(Blocks.AIR)){
-                    return Optional.empty();
-                }
-                mutable = mutable.move(i,0,j);
-            }
-        }
+        //for(int i = 0; i < 40; i++){
+        //    for(int j = 0; j < 40; j++){
+        //        NoiseColumn columnOfBlocks = chunkGenerator.getBaseColumn(mutable.getX(), mutable.getZ(), context.heightAccessor(), context.randomState());
+        //        if(columnOfBlocks.getBlock(mutable.below().getY()).is(Blocks.AIR)){
+        //            return Optional.empty();
+        //        }
+        //        mutable = mutable.move(i,0,j);
+        //    }
+        //}
 
 
-        System.out.println("I am working!, at " + blockpos);
         // Set's our spawning blockpos's y offset to be 60 blocks up.
         // Since we are going to have heightmap/terrain height spawning set to true further down, this will make it so we spawn 60 blocks above terrain.
         // If we wanted to spawn on ocean floor, we would set heightmap/terrain height spawning to false and the grab the y value of the terrain with OCEAN_FLOOR_WG heightmap.
@@ -155,7 +154,7 @@ public class EnchantSmithCamp extends Structure {
         if(structurePiecesGenerator.isPresent()) {
             // I use to debug and quickly find out if the structure is spawning or not and where it is.
             // This is returning the coordinates of the center starting piece.
-            //LOGGER.info("Fortress piece at {}", blockpos);
+            EnchantSmith.LOGGER.info("Piece at {}", blockpos);
         }
         // Return the pieces generator that is now set up so that the game runs it when it needs to create the layout of structure pieces.
         return structurePiecesGenerator;
