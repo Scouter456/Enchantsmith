@@ -36,6 +36,11 @@ public class EnchantSmithCamp extends Structure {
                     ResourceLocation.CODEC.optionalFieldOf("start_jigsaw_name").forGetter(structure -> structure.startJigsawName),
                     Codec.intRange(0, 30).fieldOf("size").forGetter(structure -> structure.size),
                     HeightProvider.CODEC.fieldOf("start_height").forGetter(structure -> structure.startHeight),
+                    Codec.INT.optionalFieldOf("min_y_allowed").forGetter(structure -> structure.minYAllowed),
+                    Codec.INT.optionalFieldOf("max_y_allowed").forGetter(structure -> structure.maxYAllowed),
+                    Codec.BOOL.fieldOf("cannot_spawn_in_liquid").orElse(false).forGetter(structure -> structure.cannotSpawnInLiquid),
+                    Codec.intRange(1, 100).optionalFieldOf("terrain_height_radius_check").forGetter(structure -> structure.terrainHeightCheckRadius),
+                    Codec.intRange(1, 1000).optionalFieldOf("allowed_terrain_height_range").forGetter(structure -> structure.allowedTerrainHeightRange),
                     Heightmap.Types.CODEC.optionalFieldOf("project_start_to_heightmap").forGetter(structure -> structure.projectStartToHeightmap),
                     Codec.intRange(1, 128).fieldOf("max_distance_from_center").forGetter(structure -> structure.maxDistanceFromCenter)
             ).apply(instance, EnchantSmithCamp::new)).codec();
@@ -43,7 +48,13 @@ public class EnchantSmithCamp extends Structure {
     private final Holder<StructureTemplatePool> startPool;
     private final Optional<ResourceLocation> startJigsawName;
     private final int size;
+
     private final HeightProvider startHeight;
+    public final boolean cannotSpawnInLiquid;
+    public final Optional<Integer> minYAllowed;
+    public final Optional<Integer> maxYAllowed;
+    public final Optional<Integer> terrainHeightCheckRadius;
+    public final Optional<Integer> allowedTerrainHeightRange;
     private final Optional<Heightmap.Types> projectStartToHeightmap;
     private final int maxDistanceFromCenter;
 
@@ -53,6 +64,11 @@ public class EnchantSmithCamp extends Structure {
                             Optional<ResourceLocation> startJigsawName,
                             int size,
                             HeightProvider startHeight,
+                            Optional<Integer> minYAllowed,
+                            Optional<Integer> maxYAllowed,
+                            boolean cannotSpawnInLiquid,
+                            Optional<Integer> terrainHeightCheckRadius,
+                            Optional<Integer> allowedTerrainHeightRange,
                             Optional<Heightmap.Types> projectStartToHeightmap,
                             int maxDistanceFromCenter)
     {
@@ -63,6 +79,11 @@ public class EnchantSmithCamp extends Structure {
         this.startHeight = startHeight;
         this.projectStartToHeightmap = projectStartToHeightmap;
         this.maxDistanceFromCenter = maxDistanceFromCenter;
+        this.minYAllowed = minYAllowed;
+        this.maxYAllowed = maxYAllowed;
+        this.cannotSpawnInLiquid = cannotSpawnInLiquid;
+        this.terrainHeightCheckRadius = terrainHeightCheckRadius;
+        this.allowedTerrainHeightRange = allowedTerrainHeightRange;
     }
 
     @Override
@@ -70,62 +91,57 @@ public class EnchantSmithCamp extends Structure {
         return GenerationStep.Decoration.SURFACE_STRUCTURES;
     }
 
-    //private static boolean isFeatureChunk(Structure.GenerationContext context, BlockPos pos) {
-    //    // Grabs the chunk position we are at
-    //    ChunkPos chunkpos = context.chunkPos();
-    //      // Checks to make sure our structure does not spawn within 10 chunks of an Ocean Monument
-    //// to demonstrate how this method is good for checking extra conditions for spawning
-    //     return !context.chunkGenerator().hasStructureChunkInRange(BuiltinStructureSets.VILLAGES., context.randomState(), context.seed(), chunkpos.getMiddleBlockX(), chunkpos.getMinBlockZ(),0);
-    //}
+    private boolean extraSpawningChecks(Structure.GenerationContext context, BlockPos pos) {
+        ChunkPos chunkPos = context.chunkPos();
+        if (this.cannotSpawnInLiquid) {
+            BlockPos centerOfChunk = chunkPos.getMiddleBlockPosition(0);
+            int landHeight = context.chunkGenerator().getFirstOccupiedHeight(centerOfChunk.getX(), centerOfChunk.getZ(), Heightmap.Types.WORLD_SURFACE_WG, context.heightAccessor(), context.randomState());
+            NoiseColumn columnOfBlocks = context.chunkGenerator().getBaseColumn(centerOfChunk.getX(), centerOfChunk.getZ(), context.heightAccessor(), context.randomState());
+            BlockState topBlock = columnOfBlocks.getBlock(centerOfChunk.getY() + landHeight);
+
+            if(!topBlock.getFluidState().isEmpty()) {
+                return false;
+            }
+        }
+
+        if (this.terrainHeightCheckRadius.isPresent() &&
+                (this.allowedTerrainHeightRange.isPresent() || this.minYAllowed.isPresent()))
+        {
+            int maxTerrainHeight = Integer.MIN_VALUE;
+            int minTerrainHeight = Integer.MAX_VALUE;
+            int terrainCheckRange = this.terrainHeightCheckRadius.get();
+
+            for (int curChunkX = chunkPos.x - terrainCheckRange; curChunkX <= chunkPos.x + terrainCheckRange; curChunkX++) {
+                for (int curChunkZ = chunkPos.z - terrainCheckRange; curChunkZ <= chunkPos.z + terrainCheckRange; curChunkZ++) {
+                    int height = context.chunkGenerator().getBaseHeight((curChunkX << 4) + 7, (curChunkZ << 4) + 7, this.projectStartToHeightmap.orElse(Heightmap.Types.WORLD_SURFACE_WG), context.heightAccessor(), context.randomState());
+                    maxTerrainHeight = Math.max(maxTerrainHeight, height);
+                    minTerrainHeight = Math.min(minTerrainHeight, height);
+
+                    if (this.minYAllowed.isPresent() && minTerrainHeight < this.minYAllowed.get()) {
+                        return false;
+                    }
+
+                    if (this.maxYAllowed.isPresent() && minTerrainHeight > this.maxYAllowed.get()) {
+                        return false;
+                    }
+                }
+            }
+
+            if(this.allowedTerrainHeightRange.isPresent() &&
+                    maxTerrainHeight - minTerrainHeight > this.allowedTerrainHeightRange.get())
+            {
+                return false;
+            }
+        }
+        return true;
+    }
     @Override
     public Optional<GenerationStub> findGenerationPoint(GenerationContext context) {
-        // Check if the spot is valid for our structure. This is just as another method for cleanness.
-        // Returning an empty optional tells the game to skip this spot as it will not generate the structure.
-        ChunkPos chunkpos = context.chunkPos();
-
-        int startY = context.chunkGenerator().getFirstOccupiedHeight(
-                chunkpos.getMinBlockX(),
-                chunkpos.getMinBlockZ(),
-                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-                context.heightAccessor(),
-                context.randomState());
-        BlockPos centerPos = new BlockPos(context.chunkPos().getMinBlockX(), startY, context.chunkPos().getMinBlockZ());
-
-        // Turns the chunk coordinates into actual coordinates we can use. (Gets center of that chunk)
-        BlockPos blockpos = context.chunkPos().getMiddleBlockPosition(0);
-        blockpos = blockpos.offset(0,startY,0);
-
-        BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos(blockpos.getX(), blockpos.getY(), blockpos.getZ());
-        ChunkGenerator chunkGenerator = context.chunkGenerator();
-        mutable = mutable.set(centerPos);
-        //NoiseColumn columnOfBlocks = chunkGenerator.getBaseColumn(mutable.getX(), mutable.getZ(), context.heightAccessor(), context.randomState());
-        //if(columnOfBlocks.getBlock(mutable.below().getY()).is(Blocks.AIR)){
-        //    return Optional.empty();
-        //}
-        //mutable = mutable.move(-40,0,0);
-        //if(columnOfBlocks.getBlock(mutable.below().getY()).is(Blocks.AIR)){
-        //    return Optional.empty();
-        //}
-        //mutable = mutable.move(0,0,40);
-        //if(columnOfBlocks.getBlock(mutable.below().getY()).is(Blocks.AIR)){
-        //    return Optional.empty();
-        //}
-        //mutable = mutable.move(40,0,0);
-
-        //for(int i = 0; i < 40; i++){
-        //    for(int j = 0; j < 40; j++){
-        //        NoiseColumn columnOfBlocks = chunkGenerator.getBaseColumn(mutable.getX(), mutable.getZ(), context.heightAccessor(), context.randomState());
-        //        if(columnOfBlocks.getBlock(mutable.below().getY()).is(Blocks.AIR)){
-        //            return Optional.empty();
-        //        }
-        //        mutable = mutable.move(i,0,j);
-        //    }
-        //}
-
-
-        // Set's our spawning blockpos's y offset to be 60 blocks up.
-        // Since we are going to have heightmap/terrain height spawning set to true further down, this will make it so we spawn 60 blocks above terrain.
-        // If we wanted to spawn on ocean floor, we would set heightmap/terrain height spawning to false and the grab the y value of the terrain with OCEAN_FLOOR_WG heightmap.
+        int offsetY = this.startHeight.sample(context.random(), new WorldGenerationContext(context.chunkGenerator(), context.heightAccessor()));
+        BlockPos blockpos = new BlockPos(context.chunkPos().getMinBlockX(), offsetY, context.chunkPos().getMinBlockZ());
+        if (!extraSpawningChecks(context, blockpos)) {
+            return Optional.empty();
+        }
 
         Optional<GenerationStub> structurePiecesGenerator =
                 JigsawPlacement.addPieces(
@@ -133,7 +149,7 @@ public class EnchantSmithCamp extends Structure {
                         this.startPool, // The starting pool to use to create the structure layout from
                         this.startJigsawName, // Can be used to only spawn from one Jigsaw block. But we don't need to worry about this.
                         this.size, // How deep a branch of pieces can go away from center piece. (5 means branches cannot be longer than 5 pieces from center piece)
-                        blockpos, // Where to spawn the structure.
+                        blockpos.below(-2), // Where to spawn the structure.
                         false, // "useExpansionHack" This is for legacy villages to generate properly. You should keep this false always.
                         this.projectStartToHeightmap, // Adds the terrain height's y value to the passed in blockpos's y value. (This uses WORLD_SURFACE_WG heightmap which stops at top water too)
                         // Here, blockpos's y value is 60 which means the structure spawn 60 blocks above terrain height.

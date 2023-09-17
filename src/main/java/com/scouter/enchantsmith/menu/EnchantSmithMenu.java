@@ -264,8 +264,9 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
     }
 
     //TODO should be correct now, remove count from this shit
+
     void setupResultSlot(int count) {
-        if (!this.enchantments.isEmpty() && this.isValidEnchantIndex(this.selectedEnchantmentIndex.get()) && count < 10 && !this.level.isClientSide) {
+        if (shouldEnchantItem(count)) {
 
             Enchantment enchantment = this.enchantments.keySet().stream().toList().get(this.selectedEnchantmentIndex.get());
 
@@ -366,6 +367,15 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
         this.broadcastChanges();
     }
 
+
+    private boolean shouldEnchantItem(int count) {
+        return !this.enchantments.isEmpty() &&
+                this.isValidEnchantIndex(this.selectedEnchantmentIndex.get()) &&
+                count < 10 &&
+                !this.level.isClientSide;
+    }
+
+
     private boolean isValidEnchantIndex(int pRecipeIndex) {
         return pRecipeIndex >= 0 && pRecipeIndex < this.enchantments.size();
     }
@@ -395,8 +405,6 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
     }
 
     private void setupGoldCost(Container pContainer, ItemStack pStack) {
-        if (!pStack.isEmpty()) {
-        }
     }
 
     /**
@@ -408,28 +416,26 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
         if (itemstack.is(Items.EMERALD) && !this.level.isClientSide) {
             this.emeraldInput = itemstack.copy();
             this.setupEmeraldCost(pInventory, itemstack);
-        } else if(!this.level.isClientSide && !this.resultSlot.getItem().isEmpty()) {
+        } else if (!this.level.isClientSide && !this.resultSlot.getItem().isEmpty()) {
             resetEmeraldValues();
             ItemStack itemStack = this.resultSlot.getItem();
             ItemStack itemStack2 = itemStack.copy();
-            boolean flag = itemStack.is(Items.ENCHANTED_BOOK);
+            boolean isEnchantedBook = itemStack.is(Items.ENCHANTED_BOOK);
 
+            Map<Enchantment, Integer> emptyMap = new HashMap<>();
+            EnchantmentHelper.setEnchantments(emptyMap, itemStack2);
 
-            if(!flag) {
-                Map<Enchantment, Integer> emptyMap = new HashMap<>();
-                EnchantmentHelper.setEnchantments(emptyMap, itemStack2);
+            if (!isEnchantedBook) {
                 Map<Enchantment, Integer> enchants = EnchantmentHelper.getEnchantments(itemStack);
                 enchants.put(this.getRandomEnchant(), this.enchantLevel.get());
                 EnchantmentHelper.setEnchantments(enchants, itemStack2);
-                this.resultSlot.set(itemStack2);
             } else {
                 itemStack2 = Items.ENCHANTED_BOOK.getDefaultInstance();
-                Map<Enchantment, Integer> emptyMap = new HashMap<>();
-                EnchantmentHelper.setEnchantments(emptyMap, itemStack2);
                 EnchantmentInstance enchantmentInstance = new EnchantmentInstance(this.getRandomEnchant(), this.enchantLevel.get());
                 EnchantedBookItem.addEnchantment(itemStack2, enchantmentInstance);
-                this.resultSlot.set(itemStack2);
             }
+
+            this.resultSlot.set(itemStack2);
         }
     }
 
@@ -555,46 +561,25 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
     public void removed(Player pPlayer) {
         super.removed(pPlayer);
         this.trader.setTradingPlayer((Player)null);
-        this.resultContainer.removeItemNoUpdate(1);
+        this.removeItemsFromContainer(this.resultContainer, pPlayer, 1);
         if (!this.trader.isClientSide()) {
             if (!pPlayer.isAlive() || pPlayer instanceof ServerPlayer && ((ServerPlayer)pPlayer).hasDisconnected()) {
-                ItemStack itemstack = this.container.removeItemNoUpdate(0);
-                if (!itemstack.isEmpty()) {
-                    pPlayer.drop(itemstack, false);
-                }
-
-                itemstack = this.container.removeItemNoUpdate(0);
-                if (!itemstack.isEmpty()) {
-                    pPlayer.drop(itemstack, false);
-                }
-
-                ItemStack itemstack2 = this.emeraldContainer.removeItemNoUpdate(0);
-                if (!itemstack2.isEmpty()) {
-                    pPlayer.drop(itemstack2, false);
-                }
-
-                itemstack2 = this.emeraldContainer.removeItemNoUpdate(0);
-                if (!itemstack2.isEmpty()) {
-                    pPlayer.drop(itemstack2, false);
-                }
-
-                ItemStack itemstack3 = this.goldContainer.removeItemNoUpdate(0);
-                if (!itemstack3.isEmpty()) {
-                    pPlayer.drop(itemstack3, false);
-                }
-
-                itemstack3 = this.goldContainer.removeItemNoUpdate(0);
-                if (!itemstack3.isEmpty()) {
-                    pPlayer.drop(itemstack3, false);
-                }
-
-
+                this.removeItemsFromContainer(this.container, pPlayer, 0);
+                this.removeItemsFromContainer(this.emeraldContainer, pPlayer, 0);
+                this.removeItemsFromContainer(this.goldContainer, pPlayer, 0);
             } else if (pPlayer instanceof ServerPlayer) {
                 pPlayer.getInventory().placeItemBackInInventory(this.container.removeItemNoUpdate(0));
                 pPlayer.getInventory().placeItemBackInInventory(this.emeraldContainer.removeItemNoUpdate(0));
                 pPlayer.getInventory().placeItemBackInInventory(this.goldContainer.removeItemNoUpdate(0));
             }
 
+        }
+    }
+
+    private void removeItemsFromContainer(Container container, Player player, int slot) {
+        ItemStack itemStack = container.removeItemNoUpdate(slot);
+        if (!itemStack.isEmpty()) {
+            player.drop(itemStack, false);
         }
     }
 }
