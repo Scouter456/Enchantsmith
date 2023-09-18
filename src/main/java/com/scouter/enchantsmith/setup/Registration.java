@@ -6,6 +6,7 @@ import com.scouter.enchantsmith.banners.ESBanners;
 import com.scouter.enchantsmith.blocks.ESBlocks;
 import com.scouter.enchantsmith.entity.villagerprofessions.VillagerProfessions;
 import com.scouter.enchantsmith.items.ESItems;
+import com.scouter.enchantsmith.loot_table.ESLootPoolEntry;
 import com.scouter.enchantsmith.menu.ESMenus;
 import com.scouter.enchantsmith.stat.ESStats;
 import com.scouter.enchantsmith.structures.ESStructures;
@@ -21,6 +22,7 @@ public class Registration {
 
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         ESBlocks.BLOCKS.register(bus);
+        ESLootPoolEntry.LP_ENTRY.register(bus);
         ESMenus.MENUS.register(bus);
         ESItems.ITEMS.register(bus);
         VillagerProfessions.register(bus);
