@@ -8,6 +8,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BannerPattern;
@@ -16,35 +17,6 @@ import net.minecraft.world.level.material.Fluid;
 import static com.scouter.enchantsmith.EnchantSmith.prefix;
 
 public class ESTags {
-
-
-    public static class Fluids {
-
-        public static final TagKey<Fluid> SHIMMER_FLUID = tag("shimmer_fluid");
-
-        private static TagKey<Fluid> tag(String name){
-            return FluidTags.create(prefix(name));
-
-        }
-        private static TagKey<Fluid> forgeTag(String name){
-            return FluidTags.create(new ResourceLocation("forge", name));
-
-        }
-    }
-    public static class Blocks {
-
-        public static final TagKey<Block> SHIMMER_FLUID = tag("shimmer_fluid");
-        public static final TagKey<Block> SHIMMER_TNT_BLACKLIST = tag("shimmer_tnt_blacklist");
-
-        private static TagKey<Block> tag(String name){
-            return BlockTags.create(prefix(name));
-
-        }
-        private static TagKey<Block> forgeTag(String name){
-            return BlockTags.create(new ResourceLocation("forge", name));
-
-        }
-    }
 
     public static class BannerPatterns {
 
@@ -59,6 +31,9 @@ public class ESTags {
     }
 
     public static class Items {
+
+        public static final TagKey<Item> ENCHANTSMITH_ITEM_BLACKLIST = tag("enchantsmith_item_blacklist");
+
         private static TagKey<Item> tag(String name){
             return ItemTags.create(prefix(name));
 
@@ -91,6 +66,17 @@ public class ESTags {
         }
         private static TagKey<Biome> forgeTag(String name){
             return TagKey.create(Registry.BIOME_REGISTRY, new ResourceLocation("forge", name));
+
+        }
+    }
+
+    public static class Enchantments {
+
+        public static final TagKey<Enchantment> ENCHANTSMITH_ENCHANTMENT_BLACKLIST = tag("enchantsmith_enchantment_blacklist");
+
+
+        private static TagKey<Enchantment> tag(String name){
+            return TagKey.create(Registry.ENCHANTMENT_REGISTRY, prefix(name));
 
         }
     }

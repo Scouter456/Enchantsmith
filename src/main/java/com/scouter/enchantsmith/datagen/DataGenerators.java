@@ -1,6 +1,7 @@
 package com.scouter.enchantsmith.datagen;
 
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -36,12 +37,15 @@ public class DataGenerators {
         //BlockTagsGenerator blockTags = new BlockTagsGenerator(generator, helper);
         //Set<BlockStateGenerator> set = Sets.newHashSet();
         //Consumer<BlockStateGenerator> consumer = set::add;
+
+        BlockTagsProvider provider = new BlockTagsGenerator(generator, helper);
         generator.addProvider(true,new BiomeTagsProvider(generator, helper));
+        generator.addProvider(true,new EnchantmentTagsProvider(generator, helper));
         //generator.addProvider(true,new EntityTags(generator, helper));
         //generator.addProvider(true,new RecipeGenerator(generator));
         generator.addProvider(true,new BlockstateGenerator(generator, helper));
         //generator.addProvider(true,new SoundsGenerator(generator, helper));
-        //generator.addProvider(true,new ItemTagsGenerator(generator, blockTags, helper));
+        generator.addProvider(true,new ItemTagsGenerator(generator, provider, helper));
         generator.addProvider(true,new ItemModelGenerator(generator, helper));
         generator.addProvider(true,new LanguageGenerator(generator));
 
