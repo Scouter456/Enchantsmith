@@ -1,5 +1,7 @@
 package com.scouter.enchantsmith.utils;
 
+import com.google.common.collect.ImmutableList;
+import com.scouter.enchantsmith.config.EnchantsmithConfig;
 import net.minecraft.core.Registry;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
@@ -8,6 +10,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -16,10 +19,11 @@ public class EnchantmentUtils {
 
     public static EnchantmentInstance getRandomEnchantment(Map<Enchantment, Integer> toFilter, ItemStack stack, RandomSource randomSource){
         Map<Enchantment, Integer> viableEnchants = new HashMap<>();
+        List<Enchantment> enchantmentList = Registry.ENCHANTMENT.getTag(ESTags.Enchantments.ENCHANTSMITH_ENCHANTMENT_BLACKLIST).stream().flatMap(s -> s.stream().map(e -> e.value())).toList();
 
         boolean flag = stack.is(Items.BOOK);
         for(Enchantment enchantment : Registry.ENCHANTMENT) {
-            if(enchantment.canEnchant(stack) && !toFilter.containsKey(enchantment) || (flag)) {
+            if((enchantment.canEnchant(stack) && !toFilter.containsKey(enchantment) || (flag)) && !enchantmentList.contains(enchantment)) {
                 viableEnchants.put(enchantment, 1);
             }
         }
@@ -45,22 +49,22 @@ public class EnchantmentUtils {
     }
 
     public static int getEnchantBaseGoldCost(Enchantment enchantment){
-        int cost = 6;
+        int cost = EnchantsmithConfig.ENCHANT_BASE_COST;
         cost += getCostForRarity(enchantment);
         cost += enchantment.getMaxLevel();
         cost += getExtraLevelCost(enchantment, 1);
         if(enchantment.isTreasureOnly()){
-            cost += 5;
+            cost += EnchantsmithConfig.TREASURE_ONLY_COST;
         }
         if(enchantment.isDiscoverable()){
-            cost -= 1;
+            cost += EnchantsmithConfig.IS_DISCOVERABLE_COST;
         }
         if(enchantment.isCurse()){
-            cost -= 2;
+            cost += EnchantsmithConfig.IS_CURSE_COST;
         }
 
         if(enchantment.isTradeable()) {
-            cost -= 1;
+            cost += EnchantsmithConfig.IS_TRADEABLE_COST;
         }
 
         return cost;
@@ -69,16 +73,16 @@ public class EnchantmentUtils {
     public static int getCostForRarity(Enchantment enchantment){
         switch (enchantment.getRarity()){
             case COMMON -> {
-                return 2;
+                return EnchantsmithConfig.ENCHANT_COMMON_COST;
             }
             case UNCOMMON -> {
-                return 4;
+                return EnchantsmithConfig.ENCHANT_UNCOMMON_COST;
             }
             case RARE -> {
-                return 6;
+                return EnchantsmithConfig.ENCHANT_RARE_COST;
             }
             case VERY_RARE -> {
-                return 8;
+                return EnchantsmithConfig.ENCHANT_VERY_RARE_COST;
             }
             default -> {
                 return 1;

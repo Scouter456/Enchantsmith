@@ -1,7 +1,9 @@
 package com.scouter.enchantsmith.menu;
 
 import com.scouter.enchantsmith.advancements.ESAdvancementTriggers;
+import com.scouter.enchantsmith.config.EnchantsmithConfig;
 import com.scouter.enchantsmith.stat.ESStats;
+import com.scouter.enchantsmith.utils.ESTags;
 import com.scouter.enchantsmith.utils.EnchantmentUtils;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -122,7 +124,7 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
         this.inputSlot = this.addSlot(new Slot(this.container, 0, 20, 33){
             @Override
             public boolean mayPlace(ItemStack pStack) {
-                return( (!pStack.is(Items.GOLD_INGOT) || !pStack.is(Items.EMERALD)) && pStack.isEnchanted()) || pStack.is(Items.ENCHANTED_BOOK);
+                return (!pStack.is(Items.GOLD_INGOT) || !pStack.is(Items.EMERALD)) && pStack.isEnchanted() && !pStack.is(ESTags.Items.ENCHANTSMITH_ITEM_BLACKLIST);
             }
         });
         this.goldInputSlot = this.addSlot(new Slot(this.goldContainer, 0, 135, 51){
@@ -152,7 +154,7 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
 
             public void onTake(Player p_150672_, ItemStack p_150673_) {
                 p_150673_.onCraftedBy(p_150672_.level, p_150672_, p_150673_.getCount());
-               // EnchantSmithMenu.this.resultContainer.awardUsedRecipes(p_150672_);
+                // EnchantSmithMenu.this.resultContainer.awardUsedRecipes(p_150672_);
                 ItemStack itemstack = EnchantSmithMenu.this.inputSlot.remove(1);
                 if (!p_150672_.getAbilities().instabuild) {
                     p_150672_.giveExperienceLevels(-EnchantSmithMenu.this.extraExperienceLevelCost.get());
@@ -283,9 +285,9 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
             EnchantmentInstance chosenEnchant;
 
             if(itemStack1.is(Items.BOOK)) {
-                 chosenEnchant = EnchantmentUtils.getRandomEnchantment(enchants, itemStack1, random);
+                chosenEnchant = EnchantmentUtils.getRandomEnchantment(enchants, itemStack1, random);
             } else {
-                 chosenEnchant = EnchantmentUtils.getRandomEnchantment(enchants, itemStack, random);
+                chosenEnchant = EnchantmentUtils.getRandomEnchantment(enchants, itemStack, random);
             }
 
             if(chosenEnchant == null)
@@ -307,8 +309,8 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
             if(this.enchantLevel.get() > maxLevel){
                 this.enchantLevel.set(maxLevel);
             }
-            this.extraEnchantmentLevelCost.set(this.enchantLevel.get());
-            this.extraExperienceLevelCost.set(this.extraEnchantmentLevelCost.get() * 4);
+            this.extraEnchantmentLevelCost.set(this.enchantLevel.get() * EnchantsmithConfig.EMERALD_COST_MULTP);
+            this.extraExperienceLevelCost.set(this.extraEnchantmentLevelCost.get() * EnchantsmithConfig.EXPERIENCE_COST_MULTP);
             enchants.put(selectedEnchant, this.enchantLevel.get());
 
             if(itemStack1.is(Items.BOOK)){
@@ -452,12 +454,12 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
             if(this.enchantLevel.get() > maxLevel){
                 this.enchantLevel.set(maxLevel);
             }
-            this.extraEnchantmentLevelCost.set(this.enchantLevel.get());
+            this.extraEnchantmentLevelCost.set(this.enchantLevel.get() * EnchantsmithConfig.EMERALD_COST_MULTP);
             int currentGold = EnchantmentUtils.getEnchantBaseGoldCost(getRandomEnchant());
             int levelCosts = EnchantmentUtils.getExtraLevelCost(getRandomEnchant(), this.enchantLevel.get());
             this.cost.set(currentGold + levelCosts);
 
-            this.extraExperienceLevelCost.set(this.extraEnchantmentLevelCost.get() * 4);
+            this.extraExperienceLevelCost.set(this.extraEnchantmentLevelCost.get() * EnchantsmithConfig.EXPERIENCE_COST_MULTP);
             ItemStack itemStack = this.resultSlot.getItem();
             ItemStack itemStack2 = itemStack.copy();
             Map<Enchantment, Integer> emptyMap = new HashMap<>();
@@ -473,7 +475,7 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
     public void resetEmeraldValues(){
         this.enchantLevel.set(1);
         this.extraEnchantmentLevelCost.set(1);
-        this.extraExperienceLevelCost.set(4);
+        this.extraExperienceLevelCost.set(EnchantsmithConfig.EXPERIENCE_COST_MULTP);
         int levelCosts = EnchantmentUtils.getExtraLevelCost(getRandomEnchant(), this.enchantLevel.get());
         int cost = EnchantmentUtils.getEnchantBaseGoldCost(getRandomEnchant());
         this.cost.set(cost + levelCosts);

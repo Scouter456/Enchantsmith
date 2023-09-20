@@ -1,5 +1,6 @@
 package com.scouter.enchantsmith;
 
+import com.scouter.enchantsmith.config.EnchantsmithConfig;
 import com.scouter.enchantsmith.setup.ClientSetup;
 import com.scouter.enchantsmith.setup.Registration;
 import net.fabricmc.api.ModInitializer;
@@ -19,6 +20,7 @@ public class EnchantSmith implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		EnchantsmithConfig.registerConfigs();
 		Registration.init();
 		ClientSetup.init();
 	}
