@@ -31,6 +31,8 @@ public class EnchantsmithConfig {
         builder.comment(EnchantSmith.MODID + " Config");
 
         builder.comment("Config for the Enchantsmith");
+        builder.comment("When changing the costs, keep the gold and emerald cost under 64 otherwise the player cant obtain it.");
+        builder.comment("The experience costs can be changed to be above 64");
         ENCHANT_BASE_COST = builder.comment("Base cost for enchants").define("enchant_base_cost", 6);
         ENCHANT_COMMON_COST = builder.comment("Cost for common enchants").define("enchant_common_cost", 2);
         ENCHANT_UNCOMMON_COST = builder.comment("Cost for uncommon enchants").define("enchant_uncommon_cost", 4);
