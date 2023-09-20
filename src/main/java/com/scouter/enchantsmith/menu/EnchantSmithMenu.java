@@ -124,7 +124,8 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
         this.inputSlot = this.addSlot(new Slot(this.container, 0, 20, 33){
             @Override
             public boolean mayPlace(ItemStack pStack) {
-                return (!pStack.is(Items.GOLD_INGOT) || !pStack.is(Items.EMERALD)) && pStack.isEnchanted() && !pStack.is(ESTags.Items.ENCHANTSMITH_ITEM_BLACKLIST);
+                boolean enchanted = pStack.isEnchanted() || pStack.is(Items.ENCHANTED_BOOK);
+                return (!pStack.is(Items.GOLD_INGOT) || !pStack.is(Items.EMERALD)) && enchanted  && !pStack.is(ESTags.Items.ENCHANTSMITH_ITEM_BLACKLIST);
             }
         });
         this.goldInputSlot = this.addSlot(new Slot(this.goldContainer, 0, 135, 51){
