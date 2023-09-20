@@ -22,7 +22,7 @@ public class ModSetup {
 
     @SubscribeEvent
     public static void addBannerToCreativeTab(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
+        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
             event.accept(ESItems.ENCHANTSMITH_BANNER_PATTERN.get());
             event.accept(ESItems.ENCHANTSMITH_NOISE_BANNER_PATTERN.get());
             event.accept(ESItems.ENCHANTSMITH_BORDER_BANNER_PATTERN.get());

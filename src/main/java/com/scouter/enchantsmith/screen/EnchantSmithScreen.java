@@ -179,7 +179,7 @@ public class EnchantSmithScreen extends AbstractContainerScreen<EnchantSmithMenu
             int slotTopTop = pTop + offSetTop;
             PoseStack poseStack = graphics.pose();
             poseStack.pushPose();
-            poseStack.translate(0, 0, 200);
+            poseStack.translate(0, 0, 300);
             RenderSystem.enableBlend();
 
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 0.5F);
