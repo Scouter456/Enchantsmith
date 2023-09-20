@@ -1,0 +1,37 @@
+{
+	"schemaVersion": 1,
+	"id": "enchantsmith",
+	"version": "${version}",
+	"name": "Enchantsmith",
+	"description": "This mod adds the Enchantsmith from MC Dungeons",
+	"authors": [
+		"Scouter456"
+	],
+	"contact": {
+		"homepage": "https://github.com/Scouter456/Enchantsmith",
+		"sources": "https://github.com/Scouter456/Enchantsmith"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/enchantsmith/enchantsmith_logo.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.scouter.enchantsmith.EnchantSmith"
+		],
+		"client": [
+			"com.scouter.enchantsmith.setup.ClientSetup"
+		]
+	},
+	"mixins": [
+		"enchantsmith.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.14.22",
+		"minecraft": "~1.19.2",
+		"java": ">=17",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}

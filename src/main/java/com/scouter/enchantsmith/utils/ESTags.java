@@ -17,35 +17,6 @@ import static com.scouter.enchantsmith.EnchantSmith.prefix;
 
 public class ESTags {
 
-
-    public static class Fluids {
-
-        public static final TagKey<Fluid> SHIMMER_FLUID = tag("shimmer_fluid");
-
-        private static TagKey<Fluid> tag(String name){
-            return FluidTags.create(prefix(name));
-
-        }
-        private static TagKey<Fluid> forgeTag(String name){
-            return FluidTags.create(new ResourceLocation("forge", name));
-
-        }
-    }
-    public static class Blocks {
-
-        public static final TagKey<Block> SHIMMER_FLUID = tag("shimmer_fluid");
-        public static final TagKey<Block> SHIMMER_TNT_BLACKLIST = tag("shimmer_tnt_blacklist");
-
-        private static TagKey<Block> tag(String name){
-            return BlockTags.create(prefix(name));
-
-        }
-        private static TagKey<Block> forgeTag(String name){
-            return BlockTags.create(new ResourceLocation("forge", name));
-
-        }
-    }
-
     public static class BannerPatterns {
 
         public static final TagKey<BannerPattern> ENCHANTSMITH_BANNER = tag("enchantsmith_banner_pattern");
@@ -60,24 +31,10 @@ public class ESTags {
 
     public static class Items {
         private static TagKey<Item> tag(String name){
-            return ItemTags.create(prefix(name));
+            return TagKey.create(Registry.ITEM_REGISTRY,prefix(name));
 
         }
-        private static TagKey<Item> forgeTag(String name){
-            return ItemTags.create(new ResourceLocation("forge", name));
 
-        }
-    }
-
-    public static class EntityTypes {
-        private static TagKey<EntityType<?>> tag(String name){
-            return TagKey.create(Registry.ENTITY_TYPE_REGISTRY, prefix(name));
-
-        }
-        private static TagKey<EntityType<?>> forgeTag(String name){
-            return TagKey.create(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation("forge", name));
-
-        }
     }
 
     public static class Biomes {

@@ -19,7 +19,7 @@ public class EnchantmentUtils {
 
         boolean flag = stack.is(Items.BOOK);
         for(Enchantment enchantment : Registry.ENCHANTMENT) {
-            if(enchantment.canEnchant(stack) && !toFilter.containsKey(enchantment) || (flag && enchantment.isAllowedOnBooks())) {
+            if(enchantment.canEnchant(stack) && !toFilter.containsKey(enchantment) || (flag)) {
                 viableEnchants.put(enchantment, 1);
             }
         }

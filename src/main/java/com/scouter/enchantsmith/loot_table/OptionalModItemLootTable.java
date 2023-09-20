@@ -4,6 +4,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.mojang.logging.LogUtils;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -12,13 +13,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntries;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryType;
 import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraftforge.fml.ModList;
 import org.slf4j.Logger;
 
 import java.util.function.Consumer;
@@ -45,7 +44,7 @@ public class OptionalModItemLootTable extends LootPoolSingletonContainer {
         pStackConsumer.accept(new ItemStack(this.item));
     }
 
-    public static LootPoolSingletonContainer.Builder<?> lootTableItem(ItemLike pItem) {
+    public static Builder<?> lootTableItem(ItemLike pItem) {
         return simpleBuilder((p_79583_, p_79584_, p_79585_, p_79586_) -> {
             return new OptionalModItemLootTable(pItem.asItem(), p_79583_, p_79584_, p_79585_, p_79586_);
         });
@@ -56,7 +55,7 @@ public class OptionalModItemLootTable extends LootPoolSingletonContainer {
             super.serializeCustom(pObject, pContext, pConditions);
             ResourceLocation resourcelocation = Registry.ITEM.getKey(pContext.item);
             String modid = pObject.get("modid").getAsString();
-            if(modid != null && ModList.get().isLoaded(modid) && pContext.item != Items.AIR){
+            if(modid != null && FabricLoader.getInstance().isModLoaded(modid) && pContext.item != Items.AIR){
                 if (resourcelocation == null) {
                     throw new IllegalArgumentException("Can't serialize unknown item " + pContext.item);
                 } else {
@@ -67,7 +66,7 @@ public class OptionalModItemLootTable extends LootPoolSingletonContainer {
 
         protected OptionalModItemLootTable deserialize(JsonObject pObject, JsonDeserializationContext pContext, int pWeight, int pQuality, LootItemCondition[] pConditions, LootItemFunction[] pFunctions) {
             String modid = pObject.get("modid").getAsString();
-            if(modid != null && ModList.get().isLoaded(modid)) {
+            if(modid != null && FabricLoader.getInstance().isModLoaded(modid)) {
                 Item item = GsonHelper.getAsItem(pObject, "name");
                 return new OptionalModItemLootTable(item, pWeight, pQuality, pConditions, pFunctions);
             }

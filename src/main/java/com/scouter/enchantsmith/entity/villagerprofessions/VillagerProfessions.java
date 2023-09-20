@@ -2,45 +2,78 @@ package com.scouter.enchantsmith.entity.villagerprofessions;
 
 import com.google.common.collect.ImmutableSet;
 import com.scouter.enchantsmith.EnchantSmith;
+import com.scouter.enchantsmith.items.ESItems;
+import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
+import net.fabricmc.fabric.api.object.builder.v1.villager.VillagerProfessionBuilder;
+import net.fabricmc.fabric.api.object.builder.v1.world.poi.PointOfInterestHelper;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.trading.Merchant;
+import net.minecraft.world.item.trading.MerchantOffer;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.InvocationTargetException;
+import static com.scouter.enchantsmith.EnchantSmith.prefix;
 
 public class VillagerProfessions {
-    public static final DeferredRegister<PoiType> POI_TYPES =
-            DeferredRegister.create(ForgeRegistries.POI_TYPES, EnchantSmith.MODID);
-    public static final DeferredRegister<VillagerProfession> VILLAGER_PROFESSIONS =
-            DeferredRegister.create(ForgeRegistries.VILLAGER_PROFESSIONS, EnchantSmith.MODID);
+    public static final Logger LOGGER = LoggerFactory.getLogger("enchantsmith");
 
-    public static final RegistryObject<PoiType> ENCHANTSMITH_POI = POI_TYPES.register("enchantsmith_poi",
-            () -> new PoiType(ImmutableSet.copyOf(Blocks.ENCHANTING_TABLE.getStateDefinition().getPossibleStates()),
-                    1, 1));
+    public static final PoiType ENCHANTSMITH_POI = registerPOI("enchantsmith_poi", Blocks.ENCHANTING_TABLE);
 
-    public static final RegistryObject<VillagerProfession> ENCHANTSMITH = VILLAGER_PROFESSIONS.register("enchantsmith",
-            () -> new VillagerProfession("enchantsmith", x -> x.get() == ENCHANTSMITH_POI.get(),
-                    x -> x.get() == ENCHANTSMITH_POI.get(), ImmutableSet.of(), ImmutableSet.of(),
-                    SoundEvents.VILLAGER_WORK_LIBRARIAN));
+    public static final VillagerProfession ENCHANTSMITH = registerProfession("enchantsmith", ResourceKey.create(Registry.POINT_OF_INTEREST_TYPE_REGISTRY, prefix("enchantsmith_poi")));
 
-
-    public static void registerPOIs() {
-        try {
-            ObfuscationReflectionHelper.findMethod(PoiType.class,
-                    "registerBlockStates", PoiType.class).invoke(null, ENCHANTSMITH_POI.get());
-        } catch (InvocationTargetException | IllegalAccessException exception) {
-            exception.printStackTrace();
-        }
+    public static VillagerProfession registerProfession(String name, ResourceKey<PoiType> type) {
+        return Registry.register(Registry.VILLAGER_PROFESSION, prefix(name),
+                VillagerProfessionBuilder.create().id(prefix(name)).workstation(type)
+                        .workSound(SoundEvents.VILLAGER_WORK_LIBRARIAN).build());
     }
 
-    public static void register(IEventBus eventBus) {
-        POI_TYPES.register(eventBus);
-        VILLAGER_PROFESSIONS.register(eventBus);
+    public static PoiType registerPOI(String name, Block block) {
+        return PointOfInterestHelper.register(prefix( name),
+                1, 1, ImmutableSet.copyOf(block.getStateDefinition().getPossibleStates()));
+    }
+
+    public static void VILLAGERPROF(){
+        LOGGER.info("Registering Villager Profession for " + EnchantSmith.MODID);
+    }
+
+    public static void registerTrades() {
+        TradeOfferHelper.registerWanderingTraderOffers(1,
+                factories -> {
+                    factories.add(((entity, random) ->
+                            new MerchantOffer(new ItemStack(Items.GOLD_INGOT, 1),
+                                    new ItemStack(ESItems.ENCHANTSMITH_CARPET, 2),64
+                                    ,12, 0.05F)));
+                });
+        TradeOfferHelper.registerWanderingTraderOffers(2,
+                factories -> {
+                    factories.add(((entity, random) ->
+                            new MerchantOffer(
+                                    new ItemStack(Items.EMERALD, 12),
+                                    new ItemStack(ESItems.ENCHANTSMITH_BANNER_PATTERN, 1),
+                                    2, 12, 0.15f)));
+
+                    factories.add(((entity, random) ->
+                            new MerchantOffer(
+                                    new ItemStack(Items.EMERALD, 12),
+                                    new ItemStack(ESItems.ENCHANTSMITH_SPIRAL_BANNER_PATTERN, 1),
+                                    2, 12, 0.15f)));
+                    factories.add(((entity, random) ->
+                            new MerchantOffer(
+                                    new ItemStack(Items.EMERALD, 12),
+                                    new ItemStack(ESItems.ENCHANTSMITH_NOISE_BANNER_PATTERN, 1),
+                                    2, 12, 0.15f)));factories.add(((entity, random) ->
+                            new MerchantOffer(
+                                    new ItemStack(Items.EMERALD, 12),
+                                    new ItemStack(ESItems.ENCHANTSMITH_BORDER_BANNER_PATTERN, 1),
+                                    2, 12, 0.15f)));
+                });
     }
 }

@@ -2,7 +2,6 @@ package com.scouter.enchantsmith.structures;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.scouter.enchantsmith.EnchantSmith;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
@@ -85,7 +84,7 @@ public class EnchantSmithCamp extends Structure {
         return GenerationStep.Decoration.SURFACE_STRUCTURES;
     }
 
-    private boolean extraSpawningChecks(Structure.GenerationContext context, BlockPos pos) {
+    private boolean extraSpawningChecks(GenerationContext context, BlockPos pos) {
         ChunkPos chunkPos = context.chunkPos();
         if (this.cannotSpawnInLiquid) {
             BlockPos centerOfChunk = chunkPos.getMiddleBlockPosition(0);
@@ -172,6 +171,6 @@ public class EnchantSmithCamp extends Structure {
 
     @Override
     public StructureType<?> type() {
-        return ESStructures.ENCHANTSMITH_CAMP.get(); // Helps the game know how to turn this structure back to json to save to chunks
+        return ESStructures.ENCHANTSMITH_CAMP; // Helps the game know how to turn this structure back to json to save to chunks
     }
 }

@@ -1,0 +1,4 @@
+accessWidener	v1	named
+
+accessible method net/minecraft/world/entity/npc/Villager setUnhappy ()V # setUnhappy
+

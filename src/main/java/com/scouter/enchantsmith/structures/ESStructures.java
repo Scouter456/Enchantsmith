@@ -3,10 +3,18 @@ package com.scouter.enchantsmith.structures;
 import com.scouter.enchantsmith.EnchantSmith;
 import net.minecraft.core.Registry;
 import net.minecraft.world.level.levelgen.structure.StructureType;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static com.scouter.enchantsmith.EnchantSmith.prefix;
 
 public class ESStructures {
-    public static final DeferredRegister<StructureType<?>> STRUCTURES = DeferredRegister.create(Registry.STRUCTURE_TYPE_REGISTRY, EnchantSmith.MODID);
-    public static final RegistryObject<StructureType<EnchantSmithCamp>> ENCHANTSMITH_CAMP = STRUCTURES.register("enchantsmith_camp", () -> () -> EnchantSmithCamp.CODEC);
+    public static final Logger LOGGER = LoggerFactory.getLogger("enchantsmith");
+
+    public static StructureType<EnchantSmithCamp> ENCHANTSMITH_CAMP = () -> EnchantSmithCamp.CODEC;
+
+    public static void STRUCTURES(){
+        Registry.register(Registry.STRUCTURE_TYPES, prefix("enchantsmith_camp"),  ENCHANTSMITH_CAMP);
+        LOGGER.info("Registering Structures for " + EnchantSmith.MODID);
+    }
 }

@@ -65,7 +65,7 @@
   "block.minecraft.banner.enchantsmith.enchantsmith_banner_spiral.white": "White Enchantsmith Banner Spiral",
   "block.minecraft.banner.enchantsmith.enchantsmith_banner_spiral.yellow": "Yellow Enchantsmith Banner Spiral",
   "enchantsmith.emerald_levels": "Pay Emeralds for extra Levels!",
-  "entity.minecraft.villager.enchantsmith.enchantsmith": "Enchantsmith",
+  "entity.minecraft.villager.enchantsmith": "Enchantsmith",
   "item.enchantsmith.banner.enchantsmith_banner_pattern": "Banner Pattern",
   "item.enchantsmith.banner.enchantsmith_border_pattern": "Banner Pattern",
   "item.enchantsmith.banner.enchantsmith_noise_pattern": "Banner Pattern",
@@ -78,6 +78,6 @@
   "item.enchantsmith.enchantsmith_noise_banner_pattern.desc": "Enchantsmith Banner Noise",
   "item.enchantsmith.enchantsmith_spiral_banner_pattern": "Banner Pattern",
   "item.enchantsmith.enchantsmith_spiral_banner_pattern.desc": "Enchantsmith Banner Spiral",
-  "itemGroup.enchantsmith": "Enchantsmith",
+  "itemGroup.enchantsmith.enchantsmith": "Enchantsmith",
   "stat.enchantsmith.enchantsmith_use": "Used Enchantsmith"
 }

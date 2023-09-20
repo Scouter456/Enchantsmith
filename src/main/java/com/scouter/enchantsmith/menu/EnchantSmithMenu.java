@@ -3,7 +3,6 @@ package com.scouter.enchantsmith.menu;
 import com.scouter.enchantsmith.advancements.ESAdvancementTriggers;
 import com.scouter.enchantsmith.stat.ESStats;
 import com.scouter.enchantsmith.utils.EnchantmentUtils;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -23,7 +22,6 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.item.trading.Merchant;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.Tags;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -96,12 +94,12 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
     final ResultContainer resultContainer = new ResultContainer();
 
 
-    public EnchantSmithMenu(int id, Inventory inventory, FriendlyByteBuf friendlyByteBuf) {
-        this(ESMenus.ENCHANTSMITH_MENU.get(), id, inventory, ContainerLevelAccess.NULL, new ClientSideMerchant(inventory.player));
+    public EnchantSmithMenu(int id, Inventory inventory) {
+        this(ESMenus.ENCHANTSMITH_MENU, id, inventory, ContainerLevelAccess.NULL, new ClientSideMerchant(inventory.player));
     }
 
     public EnchantSmithMenu(int id, Inventory inventory, ContainerLevelAccess access, Merchant merchant) {
-        this(ESMenus.ENCHANTSMITH_MENU.get(), id, inventory, access, merchant);
+        this(ESMenus.ENCHANTSMITH_MENU, id, inventory, access, merchant);
     }
     public EnchantSmithMenu(MenuType<?> menuType, int id, Inventory inventory, ContainerLevelAccess access, Merchant trader) {
         super(menuType, id);
@@ -124,7 +122,7 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
         this.inputSlot = this.addSlot(new Slot(this.container, 0, 20, 33){
             @Override
             public boolean mayPlace(ItemStack pStack) {
-                return (!pStack.is(Tags.Items.INGOTS) || !pStack.is(Tags.Items.GEMS)) && pStack.isEnchanted();
+                return( (!pStack.is(Items.GOLD_INGOT) || !pStack.is(Items.EMERALD)) && pStack.isEnchanted()) || pStack.is(Items.ENCHANTED_BOOK);
             }
         });
         this.goldInputSlot = this.addSlot(new Slot(this.goldContainer, 0, 135, 51){
@@ -168,7 +166,7 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
                 if (!itemstack.isEmpty()) {
                     EnchantSmithMenu.this.setupResultSlot(0);
                 }
-                p_150672_.awardStat(ESStats.ENCHANTSMITH_USE_STAT.get());
+                p_150672_.awardStat(ESStats.ENCHANTSMITH_USE_STAT);
 
                 if(p_150672_ instanceof ServerPlayer serverPlayer) {
                     ESAdvancementTriggers.ENCHANTSMITH_USE.trigger(serverPlayer);
