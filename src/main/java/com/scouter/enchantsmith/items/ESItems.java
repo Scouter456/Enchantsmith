@@ -7,6 +7,7 @@ import com.scouter.enchantsmith.setup.Registration;
 import com.scouter.enchantsmith.utils.ESTags;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.BannerPatternItem;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
@@ -28,19 +29,19 @@ public class ESItems {
     public static final Item ENCHANTSMITH_CARPET = registerBlockItem(ESBlocks.ENCHANTSMITH_CARPET);
     //FISHINGROD
 
-    public static final Item ENCHANTSMITH_BANNER_PATTERN = registerItem("enchantsmith_banner_pattern",new BannerPatternItem(ESTags.BannerPatterns.ENCHANTSMITH_BANNER, new FabricItemSettings().stacksTo(1).tab(CreativeModeTab.TAB_MISC)));
-    public static final Item ENCHANTSMITH_SPIRAL_BANNER_PATTERN = registerItem("enchantsmith_spiral_banner_pattern",new BannerPatternItem(ESTags.BannerPatterns.ENCHANTSMITH_SPIRAL_BANNER, new FabricItemSettings().stacksTo(1).tab(CreativeModeTab.TAB_MISC)));
-    public static final Item ENCHANTSMITH_BORDER_BANNER_PATTERN = registerItem("enchantsmith_border_banner_pattern",new BannerPatternItem(ESTags.BannerPatterns.ENCHANTSMITH_BORDER_BANNER, new FabricItemSettings().stacksTo(1).tab(CreativeModeTab.TAB_MISC)));
-    public static final Item ENCHANTSMITH_NOISE_BANNER_PATTERN = registerItem("enchantsmith_noise_banner_pattern",new BannerPatternItem(ESTags.BannerPatterns.ENCHANTSMITH_NOISE_BANNER, new FabricItemSettings().stacksTo(1).tab(CreativeModeTab.TAB_MISC)));
+    public static final Item ENCHANTSMITH_BANNER_PATTERN = registerItem("enchantsmith_banner_pattern",new BannerPatternItem(ESTags.BannerPatterns.ENCHANTSMITH_BANNER, new FabricItemSettings().stacksTo(1)));
+    public static final Item ENCHANTSMITH_SPIRAL_BANNER_PATTERN = registerItem("enchantsmith_spiral_banner_pattern",new BannerPatternItem(ESTags.BannerPatterns.ENCHANTSMITH_SPIRAL_BANNER, new FabricItemSettings().stacksTo(1)));
+    public static final Item ENCHANTSMITH_BORDER_BANNER_PATTERN = registerItem("enchantsmith_border_banner_pattern",new BannerPatternItem(ESTags.BannerPatterns.ENCHANTSMITH_BORDER_BANNER, new FabricItemSettings().stacksTo(1)));
+    public static final Item ENCHANTSMITH_NOISE_BANNER_PATTERN = registerItem("enchantsmith_noise_banner_pattern",new BannerPatternItem(ESTags.BannerPatterns.ENCHANTSMITH_NOISE_BANNER, new FabricItemSettings().stacksTo(1)));
 
 
     private static Item registerBlockItem(Block block){
-        return Registry.register(Registry.ITEM, prefix(block.getDescriptionId().replace("block.enchantsmith.", "").toString()),
-                new BlockItem(block, new FabricItemSettings().group(Registration.defaultBuilder)));
+        return Registry.register(BuiltInRegistries.ITEM, prefix(block.getDescriptionId().replace("block.enchantsmith.", "").toString()),
+                new BlockItem(block, new FabricItemSettings()));
     }
 
     private static Item registerItem(String name, Item item) {
-        return Registry.register(Registry.ITEM, prefix(name), item);
+        return Registry.register(BuiltInRegistries.ITEM, prefix(name), item);
     }
 
 

@@ -3,6 +3,7 @@ package com.scouter.enchantsmith.utils;
 import com.google.common.collect.ImmutableList;
 import com.scouter.enchantsmith.config.EnchantsmithConfig;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -19,10 +20,10 @@ public class EnchantmentUtils {
 
     public static EnchantmentInstance getRandomEnchantment(Map<Enchantment, Integer> toFilter, ItemStack stack, RandomSource randomSource){
         Map<Enchantment, Integer> viableEnchants = new HashMap<>();
-        List<Enchantment> enchantmentList = Registry.ENCHANTMENT.getTag(ESTags.Enchantments.ENCHANTSMITH_ENCHANTMENT_BLACKLIST).stream().flatMap(s -> s.stream().map(e -> e.value())).toList();
+        List<Enchantment> enchantmentList = BuiltInRegistries.ENCHANTMENT.getTag(ESTags.Enchantments.ENCHANTSMITH_ENCHANTMENT_BLACKLIST).stream().flatMap(s -> s.stream().map(e -> e.value())).toList();
 
         boolean flag = stack.is(Items.BOOK);
-        for(Enchantment enchantment : Registry.ENCHANTMENT) {
+        for(Enchantment enchantment : BuiltInRegistries.ENCHANTMENT) {
             if((enchantment.canEnchant(stack) && !toFilter.containsKey(enchantment) || (flag)) && !enchantmentList.contains(enchantment)) {
                 viableEnchants.put(enchantment, 1);
             }
@@ -36,7 +37,7 @@ public class EnchantmentUtils {
     }
 
     public static int getEnchantmentId(Enchantment enchantment){
-        return Registry.ENCHANTMENT.getId(enchantment);
+        return BuiltInRegistries.ENCHANTMENT.getId(enchantment);
     }
 
     public static Enchantment getEnchant(int id){

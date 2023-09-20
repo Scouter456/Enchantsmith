@@ -2,6 +2,7 @@ package com.scouter.enchantsmith.stat;
 
 import com.scouter.enchantsmith.EnchantSmith;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.stats.StatFormatter;
 import org.slf4j.Logger;
@@ -18,7 +19,7 @@ public class ESStats {
 
     private static ResourceLocation makeCustomStat(String key, StatFormatter formatter) {
         ResourceLocation resourceLocation = new ResourceLocation(key);
-        Registry.register(Registry.CUSTOM_STAT, key, resourceLocation);
+        Registry.register(BuiltInRegistries.CUSTOM_STAT, key, resourceLocation);
         CUSTOM.get(resourceLocation, formatter);
         return resourceLocation;
     }

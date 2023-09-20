@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.scouter.enchantsmith.EnchantSmith;
 import com.scouter.enchantsmith.menu.EnchantSmithMenu;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.EnchantmentNames;
 import net.minecraft.client.renderer.GameRenderer;
@@ -50,52 +51,53 @@ public class EnchantSmithScreen extends AbstractContainerScreen<EnchantSmithMenu
         pMenu.registerEmeraldUpdateListener(this::containerChanged);
     }
 
-    public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-        super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
-        this.renderTooltip(pPoseStack, pMouseX, pMouseY);
+    public void render(GuiGraphics graphics, int pMouseX, int pMouseY, float pPartialTick) {
+        super.render(graphics, pMouseX, pMouseY, pPartialTick);
+        this.renderTooltip(graphics, pMouseX, pMouseY);
     }
 
     @Override
-    protected void renderBg(PoseStack pPoseStack, float pPartialTick, int pX, int pY) {
-        this.renderBackground(pPoseStack);
+    protected void renderBg(GuiGraphics graphics, float pPartialTick, int pX, int pY) {
+        this.renderBackground(graphics);
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, BG_LOCATION);
 
         int i = this.leftPos;
         int j = this.topPos;
-        this.blit(pPoseStack, i, j, 0, 0, this.imageWidth, this.imageHeight);
+        graphics.blit(BG_LOCATION, i, j, 0, 0, this.imageWidth, this.imageHeight);
         int k = (int) (41.0F * this.scrollOffs);
-        this.blit(pPoseStack, i + 119, j + 15 + k, 176 + (this.isScrollBarActive() ? 0 : 12), 0, 12, 15);
+        graphics.blit(BG_LOCATION, i + 119, j + 15 + k, 176 + (this.isScrollBarActive() ? 0 : 12), 0, 12, 15);
 
         int l = this.leftPos + 52;
         int i1 = this.topPos + 14;
         int j1 = this.startIndex + 3;
-        this.renderButtons(pPoseStack, pX, pY, l, i1, j1);
-        this.renderEnchantments(l + 2, i1, j1);
+        this.renderButtons(graphics, pX, pY, l, i1, j1);
+        this.renderEnchantments(graphics,l + 2, i1, j1);
 
-        this.renderStack(Items.GOLD_INGOT.getDefaultInstance(), this.menu.getGoldCost(), this.menu.goldContainer,this.leftPos, this.topPos,135, 51);
-        this.renderStack(Items.EMERALD.getDefaultInstance(), this.menu.getEnchantLevel(), this.menu.emeraldContainer,this.leftPos, this.topPos,154, 51);
-        this.renderSlotOverlay(pPoseStack, this.menu.getGoldCost(), this.menu.goldContainer, this.leftPos, this.topPos, 134, 50);
-        this.renderSlotOverlay(pPoseStack,  this.menu.getEnchantLevel(), this.menu.emeraldContainer, this.leftPos, this.topPos, 153, 50);
-        this.renderXpOrbOverlay(pPoseStack, i,j);
+        this.renderStack(graphics,Items.GOLD_INGOT.getDefaultInstance(), this.menu.getGoldCost(), this.menu.goldContainer,this.leftPos, this.topPos,135, 51);
+        this.renderStack(graphics ,Items.EMERALD.getDefaultInstance(), this.menu.getEnchantLevel(), this.menu.emeraldContainer,this.leftPos, this.topPos,154, 51);
+        this.renderSlotOverlay(graphics, this.menu.getGoldCost(), this.menu.goldContainer, this.leftPos, this.topPos, 134, 50);
+        this.renderSlotOverlay(graphics,  this.menu.getEnchantLevel(), this.menu.emeraldContainer, this.leftPos, this.topPos, 153, 50);
+        this.renderXpOrbOverlay(graphics, i,j);
     }
 
-    private void renderXpOrbOverlay(PoseStack poseStack ,int leftPos, int rightPos){
+    private void renderXpOrbOverlay(GuiGraphics graphics ,int leftPos, int rightPos){
         if(this.menu.getExperienceCost() > 0 && this.menu.getResultSlot().hasItem()){
             int drawPosLeft = leftPos + 147;
             int drawPosTop = rightPos + 69;
+            PoseStack poseStack = graphics.pose();
             poseStack.pushPose();
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.setShaderTexture(0, BG_LOCATION);
-            this.blit(poseStack,drawPosLeft, drawPosTop , 177, 69, 14, 14);
+            graphics.blit(BG_LOCATION,drawPosLeft, drawPosTop , 177, 69, 14, 14);
             FormattedText text = FormattedText.of(String.valueOf(this.menu.getExperienceCost()));
-            this.font.drawWordWrap(text, drawPosLeft + 8, drawPosTop + 6, 20, 0xffffff);
+            graphics.drawWordWrap(this.font,text, drawPosLeft + 8, drawPosTop + 6, 20, 0xffffff);
             poseStack.popPose();
         }
     }
 
-    private void renderEnchantments(int pLeft, int pTop, int pRecipeIndexOffsetMax) {
+    private void renderEnchantments(GuiGraphics graphics,int pLeft, int pTop, int pRecipeIndexOffsetMax) {
         Map<Enchantment, Integer> list = this.menu.getEnchantments();
 
         for (int i = this.startIndex; i < pRecipeIndexOffsetMax && i < this.menu.getNumEnchantments(); ++i) {
@@ -105,32 +107,22 @@ public class EnchantSmithScreen extends AbstractContainerScreen<EnchantSmithMenu
             int i1 = pTop + l * 18 + 2;
             Enchantment enchantment = list.keySet().stream().toList().get(i);
             FormattedText text = FormattedText.of(Component.translatable(enchantment.getDescriptionId()).getString());
-            this.font.drawWordWrap(text, k, i1, 60, 8453920);
+            graphics.drawWordWrap(this.font, text, k, i1, 60, 8453920);
             //this.minecraft.getItemRenderer().renderAndDecorateItem(list.get(i).getResultItem(), k, i1);
         }
 
     }
 
-    protected void renderTooltip(PoseStack pPoseStack, int pX, int pY) {
+    protected void renderTooltip(GuiGraphics graphics, int pX, int pY) {
         if (this.menu.getCarried().isEmpty() && this.hoveredSlot != null && this.hoveredSlot.hasItem() && this.hoveredSlot != this.menu.getResultSlot()) {
-            this.renderTooltip(pPoseStack, this.hoveredSlot.getItem(), pX, pY);
+            graphics.renderTooltip(this.font, this.hoveredSlot.getItem(), pX, pY);
         } else if(this.menu.getCarried().isEmpty() && this.hoveredSlot != null && this.hoveredSlot == this.menu.getEmeraldResultSlot()) {
-            this.renderTooltip(pPoseStack, Component.translatable("enchantsmith.emerald_levels"), pX, pY);
+            graphics.renderTooltip(this.font, Component.translatable("enchantsmith.emerald_levels"), pX, pY);
         }
 
         if (this.menu.getCarried().isEmpty() && this.hoveredSlot != null && this.hoveredSlot.hasItem() && this.hoveredSlot == this.menu.getResultSlot()) {
             List<Component> components = this.menu.getResultSlot().getItem().getTooltipLines(null, TooltipFlag.Default.NORMAL);
             List<Component> toShow = new ArrayList<>();
-            //Map<Enchantment, Integer> enchants = this.menu.getEnchantments();
-            //Map<Enchantment, Integer> changedEnchants = EnchantmentHelper.getEnchantments(this.menu.getResultSlot().getItem());
-
-            //for (Enchantment enchantment1 : enchants.keySet()) {
-            //    if (changedEnchants.containsKey(enchantment1)) {
-            //        changedEnchants.remove(enchantment1);
-            //    }
-            //}
-
-            //if (!changedEnchants.isEmpty()) {
                 Enchantment finalEnchant = this.menu.getRandomEnchant();
                 for (Component component : components) {
                     if (component.toString().contains("enchantment")) {
@@ -146,10 +138,8 @@ public class EnchantSmithScreen extends AbstractContainerScreen<EnchantSmithMenu
                     } else {
                         toShow.add(component);
                     }
-
-              //  }
             }
-            this.renderComponentTooltip(pPoseStack, toShow, pX, pY);
+            graphics.renderComponentTooltip(this.font, toShow, pX, pY);
         }
 
 
@@ -164,41 +154,42 @@ public class EnchantSmithScreen extends AbstractContainerScreen<EnchantSmithMenu
                 int j1 = i + i1 % 1 * 16;
                 int k1 = j + i1 / 1 * 18 + 2;
                 if (pX >= j1 && pX < j1 + 64 && pY >= k1 && pY < k1 + 18) {
-                    this.renderTooltip(pPoseStack, Component.translatable(list.get(l).getDescriptionId()), pX, pY);
+                    graphics.renderTooltip(this.font, Component.translatable(list.get(l).getDescriptionId()), pX, pY);
                 }
             }
         }
 
     }
 
-    private void renderStack(ItemStack stack, int costs, Container container, int pLeft, int pTop, int offSetLeft, int offSetTop) {
+    private void renderStack(GuiGraphics graphics,ItemStack stack, int costs, Container container, int pLeft, int pTop, int offSetLeft, int offSetTop) {
         if (costs > 0 && container.isEmpty() && !this.menu.getResultSlot().getItem().isEmpty()) {
             int slotTopLeft = pLeft + offSetLeft;
             int slotTopTop = pTop + offSetTop;
             ItemStack itemStack = stack;
             itemStack.setCount(costs);
-            this.minecraft.getItemRenderer().renderAndDecorateFakeItem(itemStack, slotTopLeft, slotTopTop);
-            this.minecraft.getItemRenderer().renderGuiItemDecorations(this.font, itemStack, slotTopLeft, slotTopTop);
+            graphics.renderFakeItem(itemStack, slotTopLeft, slotTopTop);
+            graphics.renderItemDecorations(this.font, itemStack, slotTopLeft, slotTopTop);
         }
 
     }
 
-    private void renderSlotOverlay(PoseStack poseStack,int costs, Container container , int pLeft, int pTop, int offSetLeft, int offSetTop) {
+    private void renderSlotOverlay(GuiGraphics graphics,int costs, Container container , int pLeft, int pTop, int offSetLeft, int offSetTop) {
         if (costs > 0 && container.isEmpty() && !this.menu.getResultSlot().getItem().isEmpty()) {
             int slotTopLeft = pLeft + offSetLeft;
             int slotTopTop = pTop + offSetTop;
+            PoseStack poseStack = graphics.pose();
             poseStack.pushPose();
             poseStack.translate(0, 0, 300);
             RenderSystem.enableBlend();
 
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 0.5F);
             RenderSystem.setShaderTexture(0, BG_SLOT_LOCATION);
-            this.blit(poseStack, slotTopLeft, slotTopTop, 18, 0, 18, 18, 18, 18);
+            graphics.blit(BG_SLOT_LOCATION, slotTopLeft, slotTopTop, 18, 0, 18, 18, 18, 18);
             poseStack.popPose();
         }
     }
 
-    private void renderButtons(PoseStack pPoseStack, int pMouseX, int pMouseY, int pX, int pY, int pLastVisibleElementIndex) {
+    private void renderButtons(GuiGraphics graphics, int pMouseX, int pMouseY, int pX, int pY, int pLastVisibleElementIndex) {
         for (int i = this.startIndex; i < pLastVisibleElementIndex && i < this.menu.getNumEnchantments(); ++i) {
             int j = i - this.startIndex;
             int k = pX + j % 1 * 16;
@@ -211,7 +202,7 @@ public class EnchantSmithScreen extends AbstractContainerScreen<EnchantSmithMenu
                 j1 += 36;
             }
 
-            this.blit(pPoseStack, k, i1 - 1, 0, j1, 64, 18);
+            graphics.blit(BG_LOCATION,k, i1 - 1, 0, j1, 64, 18);
         }
 
     }

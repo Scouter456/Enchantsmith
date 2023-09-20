@@ -6,6 +6,7 @@ import com.google.gson.JsonSerializationContext;
 import com.mojang.logging.LogUtils;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.Item;
@@ -53,7 +54,7 @@ public class OptionalModItemLootTable extends LootPoolSingletonContainer {
     public static class Serializer extends LootPoolSingletonContainer.Serializer<OptionalModItemLootTable> {
         public void serializeCustom(JsonObject pObject, OptionalModItemLootTable pContext, JsonSerializationContext pConditions) {
             super.serializeCustom(pObject, pContext, pConditions);
-            ResourceLocation resourcelocation = Registry.ITEM.getKey(pContext.item);
+            ResourceLocation resourcelocation = BuiltInRegistries.ITEM.getKey(pContext.item);
             String modid = pObject.get("modid").getAsString();
             if(modid != null && FabricLoader.getInstance().isModLoaded(modid) && pContext.item != Items.AIR){
                 if (resourcelocation == null) {

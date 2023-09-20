@@ -2,6 +2,7 @@ package com.scouter.enchantsmith.loot_table;
 
 import com.scouter.enchantsmith.EnchantSmith;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.loot.Serializer;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
@@ -15,7 +16,7 @@ public class ESLootPoolEntry {
     public static final LootPoolEntryType OPTIONAL_ITEM = register("enchantsmith:optional_item", new OptionalModItemLootTable.Serializer());
 
     private static LootPoolEntryType register(String name, Serializer<? extends LootPoolEntryContainer> serializer) {
-        return Registry.register(Registry.LOOT_POOL_ENTRY_TYPE, new ResourceLocation(name), new LootPoolEntryType(serializer));
+        return Registry.register(BuiltInRegistries.LOOT_POOL_ENTRY_TYPE, new ResourceLocation(name), new LootPoolEntryType(serializer));
     }
 
     public static void LP(){

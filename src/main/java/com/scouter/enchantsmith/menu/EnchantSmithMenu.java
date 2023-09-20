@@ -107,7 +107,7 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
         super(menuType, id);
         checkContainerSize(inventory, 4);
         this.access = access;
-        this.level = inventory.player.level;
+        this.level = inventory.player.level();
 
 
 
@@ -153,7 +153,7 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
             }
 
             public void onTake(Player p_150672_, ItemStack p_150673_) {
-                p_150673_.onCraftedBy(p_150672_.level, p_150672_, p_150673_.getCount());
+                p_150673_.onCraftedBy(p_150672_.level(), p_150672_, p_150673_.getCount());
                 // EnchantSmithMenu.this.resultContainer.awardUsedRecipes(p_150672_);
                 ItemStack itemstack = EnchantSmithMenu.this.inputSlot.remove(1);
                 if (!p_150672_.getAbilities().instabuild) {
@@ -558,8 +558,8 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
     private void playTradeSound() {
         if (!this.trader.isClientSide()) {
             Entity entity = (Entity)this.trader;
-            entity.getLevel().playSound(null,entity.getX(), entity.getY(), entity.getZ(), this.trader.getNotifyTradeSound(), SoundSource.NEUTRAL, 1.0F, 1.0F);
-            entity.getLevel().playSound(null,entity.getX(), entity.getY(), entity.getZ(), SoundEvents.NOTE_BLOCK_CHIME, SoundSource.NEUTRAL, 1.0F, 1.0F);
+            entity.level().playSound(null,entity.getX(), entity.getY(), entity.getZ(), this.trader.getNotifyTradeSound(), SoundSource.NEUTRAL, 1.0F, 1.0F);
+            entity.level().playSound(null,entity.getX(), entity.getY(), entity.getZ(), SoundEvents.NOTE_BLOCK_CHIME.value(), SoundSource.NEUTRAL, 1.0F, 1.0F);
         }
     }
     /**
@@ -587,7 +587,7 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
     private void playCloseSound() {
         if (!this.trader.isClientSide()) {
             Entity entity = (Entity)this.trader;
-            entity.getLevel().playSound(null,entity.getX(), entity.getY(), entity.getZ(), SoundEvents.BOOK_PAGE_TURN, SoundSource.NEUTRAL, 1.0F, 1.0F);
+            entity.level().playSound(null,entity.getX(), entity.getY(), entity.getZ(), SoundEvents.BOOK_PAGE_TURN, SoundSource.NEUTRAL, 1.0F, 1.0F);
         }
     }
 

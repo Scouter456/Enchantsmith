@@ -2,6 +2,8 @@ package com.scouter.enchantsmith.banners;
 
 import com.scouter.enchantsmith.EnchantSmith;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BannerPattern;
@@ -18,8 +20,8 @@ public class ESBanners {
     public static final ResourceKey<BannerPattern> ENCHANTSMITH_BANNER_BORDER = registerBannerPattern("enchantsmith_banner_border");
     public static final ResourceKey<BannerPattern> ENCHANTSMITH_BANNER_NOISE = registerBannerPattern("enchantsmith_banner_noise");
     private static ResourceKey<BannerPattern> registerBannerPattern(String name) {
-        Registry.register(Registry.BANNER_PATTERN, prefix(name), new BannerPattern(name));
-        return ResourceKey.create(Registry.BANNER_PATTERN_REGISTRY, new ResourceLocation(name));
+        Registry.register(BuiltInRegistries.BANNER_PATTERN, prefix(name), new BannerPattern(name));
+        return ResourceKey.create(Registries.BANNER_PATTERN, new ResourceLocation(name));
     }
 
     public static void BANNER(){

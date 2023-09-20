@@ -39,10 +39,10 @@ public abstract class VillagerMixin {
             if (itemstack.getItem() != Items.VILLAGER_SPAWN_EGG && villager.isAlive() && !villager.isTrading() && !villager.isSleeping() && !player.isSecondaryUseActive()) {
                 if (villager.isBaby()) {
                     villager.setUnhappy();
-                } else if (!villager.level.isClientSide) {
+                } else if (!villager.level().isClientSide) {
                     villager.setTradingPlayer(player);
                     OptionalInt optionalint = player.openMenu(new SimpleMenuProvider((p_45298_, p_45299_, p_45300_) -> {
-                        return new EnchantSmithMenu(p_45298_, p_45299_, ContainerLevelAccess.create(player.level, player.blockPosition()), villager);
+                        return new EnchantSmithMenu(p_45298_, p_45299_, ContainerLevelAccess.create(player.level(), player.blockPosition()), villager);
                     }, villager.getDisplayName()));
                     playOpenScreenSound(villager);
                     player.awardStat(Stats.TALKED_TO_VILLAGER);
@@ -53,8 +53,8 @@ public abstract class VillagerMixin {
     }
 
     private static void playOpenScreenSound(Entity entity) {
-        if (!entity.level.isClientSide()) {
-            entity.getLevel().playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.BOOK_PAGE_TURN, SoundSource.NEUTRAL, 1.0F, 1.0F);
+        if (!entity.level().isClientSide()) {
+            entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.BOOK_PAGE_TURN, SoundSource.NEUTRAL, 1.0F, 1.0F);
         }
     }
 }

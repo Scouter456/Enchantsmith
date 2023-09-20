@@ -7,6 +7,8 @@ import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
 import net.fabricmc.fabric.api.object.builder.v1.villager.VillagerProfessionBuilder;
 import net.fabricmc.fabric.api.object.builder.v1.world.poi.PointOfInterestHelper;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
@@ -27,10 +29,10 @@ public class VillagerProfessions {
 
     public static final PoiType ENCHANTSMITH_POI = registerPOI("enchantsmith_poi", Blocks.ENCHANTING_TABLE);
 
-    public static final VillagerProfession ENCHANTSMITH = registerProfession("enchantsmith", ResourceKey.create(Registry.POINT_OF_INTEREST_TYPE_REGISTRY, prefix("enchantsmith_poi")));
+    public static final VillagerProfession ENCHANTSMITH = registerProfession("enchantsmith", ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, prefix("enchantsmith_poi")));
 
     public static VillagerProfession registerProfession(String name, ResourceKey<PoiType> type) {
-        return Registry.register(Registry.VILLAGER_PROFESSION, prefix(name),
+        return Registry.register(BuiltInRegistries.VILLAGER_PROFESSION, prefix(name),
                 VillagerProfessionBuilder.create().id(prefix(name)).workstation(type)
                         .workSound(SoundEvents.VILLAGER_WORK_LIBRARIAN).build());
     }

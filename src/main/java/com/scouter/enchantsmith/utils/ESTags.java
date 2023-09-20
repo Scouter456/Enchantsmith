@@ -1,6 +1,8 @@
 package com.scouter.enchantsmith.utils;
 
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
@@ -25,7 +27,7 @@ public class ESTags {
         public static final TagKey<BannerPattern> ENCHANTSMITH_BORDER_BANNER = tag("enchantsmith_border_banner_pattern");
         public static final TagKey<BannerPattern> ENCHANTSMITH_NOISE_BANNER = tag("enchantsmith_noise_banner_pattern");
         private static TagKey<BannerPattern> tag(String name){
-            return TagKey.create(Registry.BANNER_PATTERN_REGISTRY, prefix(name));
+            return TagKey.create(Registries.BANNER_PATTERN, prefix(name));
 
         }
     }
@@ -35,7 +37,7 @@ public class ESTags {
 
 
         private static TagKey<Item> tag(String name){
-            return TagKey.create(Registry.ITEM_REGISTRY,prefix(name));
+            return TagKey.create(Registries.ITEM, prefix(name));
 
         }
 
@@ -47,11 +49,11 @@ public class ESTags {
 
 
         private static TagKey<Biome> tag(String name){
-            return TagKey.create(Registry.BIOME_REGISTRY, prefix(name));
+            return TagKey.create(Registries.BIOME, prefix(name));
 
         }
         private static TagKey<Biome> forgeTag(String name){
-            return TagKey.create(Registry.BIOME_REGISTRY, new ResourceLocation("forge", name));
+            return TagKey.create(Registries.BIOME, new ResourceLocation("forge", name));
 
         }
     }
@@ -62,7 +64,7 @@ public class ESTags {
 
 
         private static TagKey<Enchantment> tag(String name){
-            return TagKey.create(Registry.ENCHANTMENT_REGISTRY, prefix(name));
+            return TagKey.create(Registries.ENCHANTMENT, prefix(name));
 
         }
     }
