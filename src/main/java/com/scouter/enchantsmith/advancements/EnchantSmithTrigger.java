@@ -4,18 +4,23 @@ import com.google.gson.JsonObject;
 import net.minecraft.advancements.critereon.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.npc.AbstractVillager;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.LootContext;
+
+import static com.scouter.enchantsmith.EnchantSmith.prefix;
 
 public class EnchantSmithTrigger extends SimpleCriterionTrigger<EnchantSmithTrigger.TriggerInstance> {
-    static final ResourceLocation ID = new ResourceLocation("enchantsmith_enchant");
+    static final ResourceLocation ID = prefix("enchantsmith_enchant");
 
     public ResourceLocation getId() {
         return ID;
     }
 
-    public TriggerInstance createInstance(JsonObject pJson, EntityPredicate.Composite pEntityPredicate, DeserializationContext pConditionsParser) {
-        EntityPredicate.Composite entitypredicate$composite = EntityPredicate.Composite.fromJson(pJson, "villager", pConditionsParser);
-        ItemPredicate itempredicate = ItemPredicate.fromJson(pJson.get("item"));
-        return new TriggerInstance(pEntityPredicate, entitypredicate$composite, itempredicate);
+    public EnchantSmithTrigger.TriggerInstance createInstance(JsonObject p_286654_, ContextAwarePredicate p_286835_, DeserializationContext p_286772_) {
+        ContextAwarePredicate contextawarepredicate = EntityPredicate.fromJson(p_286654_, "villager", p_286772_);
+        ItemPredicate itempredicate = ItemPredicate.fromJson(p_286654_.get("item"));
+        return new EnchantSmithTrigger.TriggerInstance(p_286835_, contextawarepredicate, itempredicate);
     }
 
     public void trigger(ServerPlayer pPlayer) {
@@ -25,21 +30,21 @@ public class EnchantSmithTrigger extends SimpleCriterionTrigger<EnchantSmithTrig
     }
 
     public static class TriggerInstance extends AbstractCriterionTriggerInstance {
-        private final EntityPredicate.Composite villager;
+        private final ContextAwarePredicate villager;
         private final ItemPredicate item;
 
-        public TriggerInstance(EntityPredicate.Composite pPlayer, EntityPredicate.Composite pVillager, ItemPredicate pItem) {
-            super(EnchantSmithTrigger.ID, pPlayer);
-            this.villager = pVillager;
-            this.item = pItem;
+        public TriggerInstance(ContextAwarePredicate p_286523_, ContextAwarePredicate p_286395_, ItemPredicate p_286263_) {
+            super(EnchantSmithTrigger.ID, p_286523_);
+            this.villager = p_286395_;
+            this.item = p_286263_;
         }
 
-        public static TriggerInstance tradedWithVillager() {
-            return new TriggerInstance(EntityPredicate.Composite.ANY, EntityPredicate.Composite.ANY, ItemPredicate.ANY);
+        public static EnchantSmithTrigger.TriggerInstance tradedWithVillager() {
+            return new EnchantSmithTrigger.TriggerInstance(ContextAwarePredicate.ANY, ContextAwarePredicate.ANY, ItemPredicate.ANY);
         }
 
-        public static TriggerInstance tradedWithVillager(EntityPredicate.Builder pVillager) {
-            return new TriggerInstance(EntityPredicate.Composite.wrap(pVillager.build()), EntityPredicate.Composite.ANY, ItemPredicate.ANY);
+        public static EnchantSmithTrigger.TriggerInstance tradedWithVillager(EntityPredicate.Builder pVillager) {
+            return new EnchantSmithTrigger.TriggerInstance(EntityPredicate.wrap(pVillager.build()), ContextAwarePredicate.ANY, ItemPredicate.ANY);
         }
 
         public boolean matches() {

@@ -14,9 +14,12 @@ import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.MerchantOffer;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.village.WandererTradesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -30,7 +33,7 @@ public class ForgeEvents {
 
     @SubscribeEvent
     public static void openEnchantsmithScreen(PlayerInteractEvent.EntityInteract event) {
-        if (event.getEntity().getLevel().isClientSide) return;
+        if (event.getEntity().level().isClientSide) return;
         if (event.getTarget() instanceof Villager villager) {
             Player player = event.getEntity();
             InteractionHand hand = player.getUsedItemHand();
@@ -39,10 +42,10 @@ public class ForgeEvents {
                 if (itemstack.getItem() != Items.VILLAGER_SPAWN_EGG && villager.isAlive() && !villager.isTrading() && !villager.isSleeping() && !player.isSecondaryUseActive()) {
                     if (villager.isBaby()) {
                         villager.setUnhappy();
-                    } else if (!event.getEntity().getLevel().isClientSide) {
+                    } else if (!event.getEntity().level().isClientSide) {
                         villager.setTradingPlayer(player);
                         OptionalInt optionalint = player.openMenu(new SimpleMenuProvider((p_45298_, p_45299_, p_45300_) -> {
-                            return new EnchantSmithMenu(p_45298_, p_45299_, ContainerLevelAccess.create(player.level, player.blockPosition()), villager);
+                            return new EnchantSmithMenu(p_45298_, p_45299_, ContainerLevelAccess.create(player.level(), player.blockPosition()), villager);
                         }, villager.getDisplayName()));
                         playOpenScreenSound(villager);
                         player.awardStat(Stats.TALKED_TO_VILLAGER);
@@ -53,6 +56,8 @@ public class ForgeEvents {
 
         }
     }
+
+
     @SubscribeEvent
     public static void addWanderingTraderTrades(WandererTradesEvent event){
         List<VillagerTrades.ItemListing> normalTrades = event.getGenericTrades();
@@ -87,8 +92,8 @@ public class ForgeEvents {
     }
 
     private static void playOpenScreenSound(Entity entity) {
-        if (!entity.level.isClientSide()) {
-            entity.getLevel().playSound(null,entity.getX(), entity.getY(), entity.getZ(), SoundEvents.BOOK_PAGE_TURN, SoundSource.NEUTRAL, 1.0F, 1.0F);
+        if (!entity.level().isClientSide()) {
+            entity.level().playSound(null,entity.getX(), entity.getY(), entity.getZ(), SoundEvents.BOOK_PAGE_TURN, SoundSource.NEUTRAL, 1.0F, 1.0F);
         }
     }
 }

@@ -1,7 +1,10 @@
 package com.scouter.enchantsmith.menu;
 
 import com.scouter.enchantsmith.advancements.ESAdvancementTriggers;
+import com.scouter.enchantsmith.config.EnchantsmithConfig;
+import com.scouter.enchantsmith.creativetabs.ESTabs;
 import com.scouter.enchantsmith.stat.ESStats;
+import com.scouter.enchantsmith.utils.ESTags;
 import com.scouter.enchantsmith.utils.EnchantmentUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -107,7 +110,7 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
         super(menuType, id);
         checkContainerSize(inventory, 4);
         this.access = access;
-        this.level = inventory.player.level;
+        this.level = inventory.player.level();
 
 
 
@@ -124,7 +127,7 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
         this.inputSlot = this.addSlot(new Slot(this.container, 0, 20, 33){
             @Override
             public boolean mayPlace(ItemStack pStack) {
-                return (!pStack.is(Tags.Items.INGOTS) || !pStack.is(Tags.Items.GEMS)) && pStack.isEnchanted();
+                return (!pStack.is(Tags.Items.INGOTS) || !pStack.is(Tags.Items.GEMS)) && pStack.isEnchanted() && !pStack.is(ESTags.Items.ENCHANTSMITH_ITEM_BLACKLIST);
             }
         });
         this.goldInputSlot = this.addSlot(new Slot(this.goldContainer, 0, 135, 51){
@@ -153,7 +156,7 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
             }
 
             public void onTake(Player p_150672_, ItemStack p_150673_) {
-                p_150673_.onCraftedBy(p_150672_.level, p_150672_, p_150673_.getCount());
+                p_150673_.onCraftedBy(p_150672_.level(), p_150672_, p_150673_.getCount());
                // EnchantSmithMenu.this.resultContainer.awardUsedRecipes(p_150672_);
                 ItemStack itemstack = EnchantSmithMenu.this.inputSlot.remove(1);
                 if (!p_150672_.getAbilities().instabuild) {
@@ -309,8 +312,8 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
             if(this.enchantLevel.get() > maxLevel){
                 this.enchantLevel.set(maxLevel);
             }
-            this.extraEnchantmentLevelCost.set(this.enchantLevel.get());
-            this.extraExperienceLevelCost.set(this.extraEnchantmentLevelCost.get() * 4);
+            this.extraEnchantmentLevelCost.set(this.enchantLevel.get() * EnchantsmithConfig.EMERALD_COST_MULTP.get());
+            this.extraExperienceLevelCost.set(this.extraEnchantmentLevelCost.get() * EnchantsmithConfig.EXPERIENCE_COST_MULTP.get());
             enchants.put(selectedEnchant, this.enchantLevel.get());
 
             if(itemStack1.is(Items.BOOK)){
@@ -454,12 +457,12 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
             if(this.enchantLevel.get() > maxLevel){
                 this.enchantLevel.set(maxLevel);
             }
-            this.extraEnchantmentLevelCost.set(this.enchantLevel.get());
+            this.extraEnchantmentLevelCost.set(this.enchantLevel.get() * EnchantsmithConfig.EMERALD_COST_MULTP.get());
             int currentGold = EnchantmentUtils.getEnchantBaseGoldCost(getRandomEnchant());
             int levelCosts = EnchantmentUtils.getExtraLevelCost(getRandomEnchant(), this.enchantLevel.get());
             this.cost.set(currentGold + levelCosts);
 
-            this.extraExperienceLevelCost.set(this.extraEnchantmentLevelCost.get() * 4);
+            this.extraExperienceLevelCost.set(this.extraEnchantmentLevelCost.get() * EnchantsmithConfig.EXPERIENCE_COST_MULTP.get());
             ItemStack itemStack = this.resultSlot.getItem();
             ItemStack itemStack2 = itemStack.copy();
             Map<Enchantment, Integer> emptyMap = new HashMap<>();
@@ -475,7 +478,7 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
     public void resetEmeraldValues(){
         this.enchantLevel.set(1);
         this.extraEnchantmentLevelCost.set(1);
-        this.extraExperienceLevelCost.set(4);
+        this.extraExperienceLevelCost.set(EnchantsmithConfig.EXPERIENCE_COST_MULTP.get());
         int levelCosts = EnchantmentUtils.getExtraLevelCost(getRandomEnchant(), this.enchantLevel.get());
         int cost = EnchantmentUtils.getEnchantBaseGoldCost(getRandomEnchant());
         this.cost.set(cost + levelCosts);
@@ -558,8 +561,8 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
     private void playTradeSound() {
         if (!this.trader.isClientSide()) {
             Entity entity = (Entity)this.trader;
-            entity.getLevel().playSound(null,entity.getX(), entity.getY(), entity.getZ(), this.trader.getNotifyTradeSound(), SoundSource.NEUTRAL, 1.0F, 1.0F);
-            entity.getLevel().playSound(null,entity.getX(), entity.getY(), entity.getZ(), SoundEvents.NOTE_BLOCK_CHIME, SoundSource.NEUTRAL, 1.0F, 1.0F);
+            entity.level().playSound(null,entity.getX(), entity.getY(), entity.getZ(), this.trader.getNotifyTradeSound(), SoundSource.NEUTRAL, 1.0F, 1.0F);
+            entity.level().playSound(null,entity.getX(), entity.getY(), entity.getZ(), SoundEvents.NOTE_BLOCK_CHIME.get(), SoundSource.NEUTRAL, 1.0F, 1.0F);
         }
     }
     /**
@@ -587,7 +590,7 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
     private void playCloseSound() {
         if (!this.trader.isClientSide()) {
             Entity entity = (Entity)this.trader;
-            entity.getLevel().playSound(null,entity.getX(), entity.getY(), entity.getZ(), SoundEvents.BOOK_PAGE_TURN, SoundSource.NEUTRAL, 1.0F, 1.0F);
+            entity.level().playSound(null,entity.getX(), entity.getY(), entity.getZ(), SoundEvents.BOOK_PAGE_TURN, SoundSource.NEUTRAL, 1.0F, 1.0F);
         }
     }
 
