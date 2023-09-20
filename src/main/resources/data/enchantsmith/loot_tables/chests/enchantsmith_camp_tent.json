@@ -57,8 +57,8 @@
         },
         {
           "type": "enchantsmith:optional_item",
-          "modid": "ironsspellbooks",
-          "name": "ironsspellbooks:common_ink",
+          "modid": "irons_spellbooks",
+          "name": "irons_spellbooks:common_ink",
           "functions": [
             {
               "function": "minecraft:set_count",

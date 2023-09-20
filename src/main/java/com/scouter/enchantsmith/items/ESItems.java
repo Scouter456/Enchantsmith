@@ -36,7 +36,7 @@ public class ESItems {
     }
 
 
-    public static CreativeModeTab creativeTab = new CreativeModeTab("enderquatic") {
+    public static CreativeModeTab creativeTab = new CreativeModeTab("enchantsmith") {
         @Override
         public ItemStack makeIcon() {
             return new ItemStack(ENCHANTSMITH_CARPET.get());

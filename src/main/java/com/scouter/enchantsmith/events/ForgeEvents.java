@@ -55,20 +55,32 @@ public class ForgeEvents {
     }
     @SubscribeEvent
     public static void addWanderingTraderTrades(WandererTradesEvent event){
+        List<VillagerTrades.ItemListing> normalTrades = event.getGenericTrades();
         List<VillagerTrades.ItemListing> rareTrades = event.getRareTrades();
-        rareTrades.add((pTrader, pRandom) -> new MerchantOffer(
+
+        normalTrades.add((trader, random) ->
+            new MerchantOffer(new ItemStack(Items.GOLD_INGOT, 1),
+                    new ItemStack(ESItems.ENCHANTSMITH_CARPET.get(), 2),64
+                    ,12, 0.05F)
+        );
+
+        rareTrades.add((pTrader, pRandom) ->
+                new MerchantOffer(
                 new ItemStack(Items.EMERALD, 12),
                 new ItemStack(ESItems.ENCHANTSMITH_BANNER_PATTERN.get(), 1),
                 2, 12, 0.15f));
-        rareTrades.add((pTrader, pRandom) -> new MerchantOffer(
+        rareTrades.add((pTrader, pRandom) ->
+                new MerchantOffer(
                 new ItemStack(Items.EMERALD, 4),
                 new ItemStack(ESItems.ENCHANTSMITH_SPIRAL_BANNER_PATTERN.get(), 1),
                 2, 12, 0.15f));
-        rareTrades.add((pTrader, pRandom) -> new MerchantOffer(
+        rareTrades.add((pTrader, pRandom) ->
+                new MerchantOffer(
                 new ItemStack(Items.EMERALD, 4),
                 new ItemStack(ESItems.ENCHANTSMITH_NOISE_BANNER_PATTERN.get(), 1),
                 2, 12, 0.15f));
-        rareTrades.add((pTrader, pRandom) -> new MerchantOffer(
+        rareTrades.add((pTrader, pRandom) ->
+                new MerchantOffer(
                 new ItemStack(Items.EMERALD, 4),
                 new ItemStack(ESItems.ENCHANTSMITH_BORDER_BANNER_PATTERN.get(), 1),
                 2, 12, 0.15f));

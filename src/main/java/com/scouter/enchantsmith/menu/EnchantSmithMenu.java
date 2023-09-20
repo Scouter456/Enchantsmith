@@ -314,7 +314,8 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
             enchants.put(selectedEnchant, this.enchantLevel.get());
 
             if(itemStack1.is(Items.BOOK)){
-                EnchantedBookItem.addEnchantment(itemStack2, chosenEnchant);
+                EnchantmentInstance enchantmentInstance = new EnchantmentInstance(selectedEnchant, this.enchantLevel.get());
+                EnchantedBookItem.addEnchantment(itemStack2, enchantmentInstance);
             } else {
                 EnchantmentHelper.setEnchantments(enchants, itemStack);
             }
