@@ -570,7 +570,6 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
         super.removed(pPlayer);
         playCloseSound();
         this.trader.setTradingPlayer((Player)null);
-        this.removeItemsFromContainer(this.resultContainer, pPlayer, 1);
         if (!this.trader.isClientSide()) {
             if (!pPlayer.isAlive() || pPlayer instanceof ServerPlayer && ((ServerPlayer)pPlayer).hasDisconnected()) {
                 this.removeItemsFromContainer(this.container, pPlayer, 0);
