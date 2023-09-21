@@ -572,7 +572,7 @@ public class EnchantSmithMenu extends AbstractContainerMenu {
         super.removed(pPlayer);
         playCloseSound();
         this.trader.setTradingPlayer((Player)null);
-        Fix dupe bug when exiting menu        if (!this.trader.isClientSide()) {
+        if (!this.trader.isClientSide()) {
             if (!pPlayer.isAlive() || pPlayer instanceof ServerPlayer && ((ServerPlayer)pPlayer).hasDisconnected()) {
                 this.removeItemsFromContainer(this.container, pPlayer, 0);
                 this.removeItemsFromContainer(this.emeraldContainer, pPlayer, 0);
