@@ -33,7 +33,7 @@ public class OptionalModItemLootTable extends LootPoolSingletonContainer {
     }
 
     public LootPoolEntryType getType() {
-        return LootPoolEntries.ITEM;
+        return ESLootPoolEntry.OPTIONAL_ITEM.get();
     }
 
     /**
@@ -55,21 +55,25 @@ public class OptionalModItemLootTable extends LootPoolSingletonContainer {
         public void serializeCustom(JsonObject pObject, OptionalModItemLootTable pContext, JsonSerializationContext pConditions) {
             super.serializeCustom(pObject, pContext, pConditions);
             ResourceLocation resourcelocation = Registry.ITEM.getKey(pContext.item);
-            String modid = pObject.get("modid").getAsString();
-            if(modid != null && ModList.get().isLoaded(modid) && pContext.item != Items.AIR){
-                if (resourcelocation == null) {
-                    throw new IllegalArgumentException("Can't serialize unknown item " + pContext.item);
-                } else {
-                    pObject.addProperty("name", resourcelocation.toString());
+            if (pObject.has("modid")) {
+                String modid = pObject.get("modid").getAsString();
+                if (modid != null && ModList.get().isLoaded(modid) && pContext.item != Items.AIR) {
+                    if (resourcelocation == null) {
+                        throw new IllegalArgumentException("Can't serialize unknown item " + pContext.item);
+                    } else {
+                        pObject.addProperty("name", resourcelocation.toString());
+                    }
                 }
             }
         }
 
         protected OptionalModItemLootTable deserialize(JsonObject pObject, JsonDeserializationContext pContext, int pWeight, int pQuality, LootItemCondition[] pConditions, LootItemFunction[] pFunctions) {
-            String modid = pObject.get("modid").getAsString();
-            if(modid != null && ModList.get().isLoaded(modid)) {
-                Item item = GsonHelper.getAsItem(pObject, "name");
-                return new OptionalModItemLootTable(item, pWeight, pQuality, pConditions, pFunctions);
+            if (pObject.has("modid")) {
+                String modid = pObject.get("modid").getAsString();
+                if (modid != null && ModList.get().isLoaded(modid)) {
+                    Item item = GsonHelper.getAsItem(pObject, "name");
+                    return new OptionalModItemLootTable(item, pWeight, pQuality, pConditions, pFunctions);
+                }
             }
             return new OptionalModItemLootTable(Items.AIR, pWeight, pQuality, pConditions, pFunctions);
         }
