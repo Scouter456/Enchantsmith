@@ -32,7 +32,7 @@ public class OptionalModItemLootTable extends LootPoolSingletonContainer {
     }
 
     public LootPoolEntryType getType() {
-        return LootPoolEntries.ITEM;
+        return ESLootPoolEntry.OPTIONAL_ITEM;
     }
 
     /**
@@ -54,6 +54,7 @@ public class OptionalModItemLootTable extends LootPoolSingletonContainer {
         public void serializeCustom(JsonObject pObject, OptionalModItemLootTable pContext, JsonSerializationContext pConditions) {
             super.serializeCustom(pObject, pContext, pConditions);
             ResourceLocation resourcelocation = Registry.ITEM.getKey(pContext.item);
+            if(pObject.has("modid")){
             String modid = pObject.get("modid").getAsString();
             if(modid != null && FabricLoader.getInstance().isModLoaded(modid) && pContext.item != Items.AIR){
                 if (resourcelocation == null) {
@@ -62,13 +63,16 @@ public class OptionalModItemLootTable extends LootPoolSingletonContainer {
                     pObject.addProperty("name", resourcelocation.toString());
                 }
             }
+            }
         }
 
         protected OptionalModItemLootTable deserialize(JsonObject pObject, JsonDeserializationContext pContext, int pWeight, int pQuality, LootItemCondition[] pConditions, LootItemFunction[] pFunctions) {
-            String modid = pObject.get("modid").getAsString();
-            if(modid != null && FabricLoader.getInstance().isModLoaded(modid)) {
-                Item item = GsonHelper.getAsItem(pObject, "name");
-                return new OptionalModItemLootTable(item, pWeight, pQuality, pConditions, pFunctions);
+            if(pObject.has("modid")) {
+                String modid = pObject.get("modid").getAsString();
+                if (modid != null && FabricLoader.getInstance().isModLoaded(modid)) {
+                    Item item = GsonHelper.getAsItem(pObject, "name");
+                    return new OptionalModItemLootTable(item, pWeight, pQuality, pConditions, pFunctions);
+                }
             }
             return new OptionalModItemLootTable(Items.AIR, pWeight, pQuality, pConditions, pFunctions);
         }
